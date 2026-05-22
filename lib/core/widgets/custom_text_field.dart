@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
 
 /// Campo de texto personalizado y reutilizable.
@@ -19,6 +20,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final FocusNode? focusNode;
   final bool autofocus;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
     super.key,
@@ -38,6 +40,7 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction,
     this.focusNode,
     this.autofocus = false,
+    this.inputFormatters,
   });
 
   @override
@@ -55,6 +58,7 @@ class CustomTextField extends StatelessWidget {
       textInputAction: textInputAction,
       focusNode: focusNode,
       autofocus: autofocus,
+      inputFormatters: inputFormatters,
       style: const TextStyle(
         fontSize: 16,
         color: AppColors.textPrimary,

@@ -120,4 +120,20 @@ class ProductosRepository {
       throw AppException.desdeSupabase(e);
     }
   }
+
+  /// Sube un ticket/factura a Supabase Storage y retorna la URL pública.
+  Future<String> subirTicket(String usuarioId, String nombreArchivo, List<int> bytes) async {
+    try {
+      final path = '$usuarioId/$nombreArchivo';
+      await _supabase.storage
+          .from(SupabaseConstants.bucketTickets)
+          .uploadBinary(path, bytes as dynamic);
+
+      return _supabase.storage
+          .from(SupabaseConstants.bucketTickets)
+          .getPublicUrl(path);
+    } catch (e) {
+      throw AppException.desdeSupabase(e);
+    }
+  }
 }

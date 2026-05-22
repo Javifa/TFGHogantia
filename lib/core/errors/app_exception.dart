@@ -42,9 +42,15 @@ class AppException implements Exception {
         codigo: 'NETWORK',
       );
     }
+    if (mensaje.contains('rate limit') || mensaje.contains('over_email_send_rate_limit')) {
+      return const AppException(
+        'Demasiados intentos. Por favor, desactiva "Confirm email" en Supabase o espera un rato.',
+        codigo: 'AUTH_RATE_LIMIT',
+      );
+    }
 
     return AppException(
-      'Ha ocurrido un error inesperado',
+      'Error: $mensaje',
       codigo: 'UNKNOWN',
       error: error,
     );

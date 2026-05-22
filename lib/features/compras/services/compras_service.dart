@@ -55,9 +55,17 @@ class ComprasService {
     return await _repository.obtenerPorId(compraCreada.id);
   }
 
-  /// Actualiza una compra.
-  Future<Compra> actualizar(Compra compra) async {
-    return await _repository.actualizar(compra);
+  /// Actualiza una compra y opcionalmente su ticket.
+  Future<Compra> actualizar(Compra compra, {Uint8List? nuevaImagenTicket}) async {
+    String? nuevaUrl = compra.imagenTicketUrl;
+    
+    if (nuevaImagenTicket != null) {
+      final nombre = 'ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      nuevaUrl = await subirTicket(compra.usuarioId, nombre, nuevaImagenTicket);
+    }
+
+    final compraAActualizar = compra.copyWith(imagenTicketUrl: nuevaUrl);
+    return await _repository.actualizar(compraAActualizar);
   }
 
   /// Elimina una compra.

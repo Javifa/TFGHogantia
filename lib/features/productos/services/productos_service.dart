@@ -26,15 +26,31 @@ class ProductosService {
   }
 
   /// Crea un producto con validación.
-  Future<Producto> crear(Producto producto) async {
+  Future<Producto> crear(Producto producto, {List<int>? imagenTicket}) async {
     _validar(producto);
-    return await _repository.crear(producto);
+
+    String? ticketUrl = producto.ticketUrl;
+    if (imagenTicket != null) {
+      final nombre = 'producto_ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      ticketUrl = await subirTicket(producto.usuarioId, nombre, imagenTicket);
+    }
+
+    final prodACrear = producto.copyWith(ticketUrl: ticketUrl);
+    return await _repository.crear(prodACrear);
   }
 
   /// Actualiza un producto con validación.
-  Future<Producto> actualizar(Producto producto) async {
+  Future<Producto> actualizar(Producto producto, {List<int>? nuevaImagenTicket}) async {
     _validar(producto);
-    return await _repository.actualizar(producto);
+
+    String? ticketUrl = producto.ticketUrl;
+    if (nuevaImagenTicket != null) {
+      final nombre = 'producto_ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      ticketUrl = await subirTicket(producto.usuarioId, nombre, nuevaImagenTicket);
+    }
+
+    final prodAActualizar = producto.copyWith(ticketUrl: ticketUrl);
+    return await _repository.actualizar(prodAActualizar);
   }
 
   /// Elimina un producto (soft delete).
@@ -72,5 +88,10 @@ class ProductosService {
     if (producto.cantidadMinima < 0) {
       throw const AppException('La cantidad mínima no puede ser negativa');
     }
+  }
+
+  /// Sube un ticket al repositorio.
+  Future<String> subirTicket(String usuarioId, String nombre, List<int> bytes) async {
+    return await _repository.subirTicket(usuarioId, nombre, bytes);
   }
 }

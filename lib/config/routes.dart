@@ -13,6 +13,8 @@ import '../features/compras/screens/compras_screen.dart';
 import '../features/compras/screens/compra_detail_screen.dart';
 import '../features/gastos/screens/gastos_screen.dart';
 import '../features/perfil/screens/perfil_screen.dart';
+import '../features/perfil/screens/privacidad_screen.dart';
+import '../features/perfil/screens/ayuda_screen.dart';
 
 /// Configuración de rutas de la aplicación con GoRouter.
 class AppRouter {
@@ -107,6 +109,18 @@ class AppRouter {
               path: perfil,
               name: 'perfil',
               builder: (_, __) => const PerfilScreen(),
+              routes: [
+                GoRoute(
+                  path: 'privacidad',
+                  name: 'privacidad',
+                  builder: (_, __) => const PrivacidadScreen(),
+                ),
+                GoRoute(
+                  path: 'ayuda',
+                  name: 'ayuda',
+                  builder: (_, __) => const AyudaScreen(),
+                ),
+              ],
             ),
           ]),
         ],

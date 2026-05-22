@@ -6,7 +6,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../core/widgets/loading_indicator.dart';
 import '../facades/productos_facade.dart';
+import 'widgets/producto_form.dart';
 
 /// Pantalla de detalle de un producto con soporte de ticket.
 class ProductoDetailScreen extends StatefulWidget {
@@ -29,10 +31,24 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
     final picker = ImagePicker();
     final imagen = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1200, imageQuality: 80);
     if (imagen == null) return;
+    
+    final bytes = await imagen.readAsBytes();
+    
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ticket adjuntado correctamente'), behavior: SnackBarBehavior.floating),
-      );
+      final facade = context.read<ProductosFacade>();
+      final p = facade.productoActual;
+      if (p != null) {
+        final ok = await facade.actualizarProducto(p, nuevaImagenTicket: bytes);
+        if (ok && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Ticket adjuntado correctamente'), behavior: SnackBarBehavior.floating),
+          );
+        } else if (!ok && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(facade.error ?? 'Error al adjuntar ticket. Revisa Supabase.'), backgroundColor: AppColors.error),
+          );
+        }
+      }
     }
   }
 
@@ -41,7 +57,31 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
     final hp = Responsive.horizontalPadding(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle de producto')),
+      appBar: AppBar(
+        title: const Text('Detalle de producto'),
+        actions: [
+          Consumer<ProductosFacade>(
+            builder: (_, facade, __) {
+              final p = facade.productoActual;
+              if (p == null) return const SizedBox();
+              return IconButton(
+                icon: const Icon(Icons.edit_rounded),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => ProductoForm(
+                      estanciaId: p.estanciaId,
+                      producto: p,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: Consumer<ProductosFacade>(
         builder: (_, facade, __) {
           if (facade.cargando) return const AppLoadingIndicator();
@@ -91,7 +131,8 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
                         borderRadius: BorderRadius.circular(14),
                         child: Image.network(p.ticketUrl!, width: double.infinity, fit: BoxFit.cover),
                       ),
-                    ] else
+                    ] else ...[
+                      // Opción de adjuntar ticket después
                       GestureDetector(
                         onTap: _adjuntarTicket,
                         child: Container(
@@ -114,13 +155,15 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Adjuntar ticket', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.textPrimary)),
-                                  Text('Sube la foto del recibo de compra', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+                                  Text('Sube la foto del recibo', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
                                 ],
                               ),
                             ],
                           ),
                         ),
                       ),
+                      const SizedBox(height: 24),
+                    ]
                   ],
                 ),
               ),

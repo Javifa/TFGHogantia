@@ -11,6 +11,8 @@ import '../facades/estancias_facade.dart';
 import '../models/estancia.dart';
 import 'widgets/estancia_card.dart';
 import 'widgets/estancia_form.dart';
+import '../../auth/facades/auth_facade.dart';
+import '../../productos/facades/productos_facade.dart';
 
 /// Pantalla principal de estancias del hogar (Dark Neon Theme).
 class EstanciasScreen extends StatefulWidget {
@@ -22,11 +24,14 @@ class EstanciasScreen extends StatefulWidget {
 class _EstanciasScreenState extends State<EstanciasScreen> {
   final _searchCtrl = TextEditingController();
 
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EstanciasFacade>().cargarEstancias();
+      context.read<ProductosFacade>().cargarTodos();
     });
   }
 
@@ -51,15 +56,29 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
     final cols = Responsive.gridColumns(context);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_estancias_main',
+        onPressed: _crear,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add_rounded, size: 28),
+      ),
       body: SafeArea(
-        child: Consumer<EstanciasFacade>(
-          builder: (context, facade, _) {
+        child: Consumer2<EstanciasFacade, ProductosFacade>(
+          builder: (context, facade, productosFacade, _) {
             if (facade.cargando && facade.estancias.isEmpty) {
               return const AppLoadingIndicator(mensaje: 'Cargando estancias...');
             }
             if (facade.error != null && facade.estancias.isEmpty) {
               return AppErrorWidget(mensaje: facade.error!, onReintentar: facade.cargarEstancias);
             }
+
+            final estanciasFiltradas = _searchQuery.isEmpty 
+                ? facade.estancias 
+                : facade.estancias.where((e) => 
+                    e.nombre.toLowerCase().contains(_searchQuery)
+                  ).toList();
 
             return RefreshIndicator(
               onRefresh: facade.cargarEstancias,
@@ -97,14 +116,34 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                                 ),
                               ],
                             ),
-                            FloatingActionButton(
-                              heroTag: 'fab_estancias',
-                              mini: true,
-                              onPressed: _crear,
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              child: const Icon(Icons.add_rounded),
+                            Consumer<AuthFacade>(
+                              builder: (context, auth, _) {
+                                final usuario = auth.usuario;
+                                final inicial = usuario?.nombreVisible.isNotEmpty == true
+                                    ? usuario!.nombreVisible[0].toUpperCase()
+                                    : '?';
+
+                                return GestureDetector(
+                                  onTap: () => context.go('/perfil'),
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                                    backgroundImage: usuario?.avatarUrl != null
+                                        ? NetworkImage(usuario!.avatarUrl!)
+                                        : null,
+                                    child: usuario?.avatarUrl == null
+                                        ? Text(
+                                            inicial,
+                                            style: const TextStyle(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -118,7 +157,7 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                         child: TextField(
                           controller: _searchCtrl,
                           decoration: InputDecoration(
-                            hintText: 'Buscar estancias o productos',
+                            hintText: 'Buscar estancias',
                             prefixIcon: const Icon(Icons.search_rounded),
                             filled: true,
                             fillColor: AppColors.card,
@@ -129,17 +168,19 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                             ),
                           ),
                           onChanged: (val) {
-                            // TODO: Implementar filtrado local
+                            setState(() {
+                              _searchQuery = val.toLowerCase();
+                            });
                           },
                         ),
                       ),
                     ),
 
                     // ── Grid o Vacío ──
-                    if (facade.estancias.isEmpty)
+                    if (estanciasFiltradas.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
-                        child: _buildVacio(),
+                        child: _buildVacio(isSearch: _searchQuery.isNotEmpty),
                       )
                     else
                       SliverPadding(
@@ -153,15 +194,17 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                           ),
                           delegate: SliverChildBuilderDelegate(
                             (context, i) {
-                              final e = facade.estancias[i];
+                              final e = estanciasFiltradas[i];
+                              final cantidad = productosFacade.productos.where((p) => p.estanciaId == e.id).length;
                               return EstanciaCard(
                                 estancia: e,
+                                cantidadProductos: cantidad,
                                 onTap: () => context.go('/estancia/${e.id}'),
                                 onEditar: () => _editar(e),
                                 onEliminar: () => _eliminar(e),
                               );
                             },
-                            childCount: facade.estancias.length,
+                            childCount: estanciasFiltradas.length,
                           ),
                         ),
                       ),
@@ -177,7 +220,7 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
     );
   }
 
-  Widget _buildVacio() {
+  Widget _buildVacio({bool isSearch = false}) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -191,12 +234,24 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                 color: AppColors.surfaceVariant,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Icon(Icons.home_work_outlined, size: 40, color: AppColors.textSecondary),
+              child: Icon(
+                isSearch ? Icons.search_off_rounded : Icons.home_work_outlined, 
+                size: 40, 
+                color: AppColors.textSecondary
+              ),
             ),
             const SizedBox(height: 20),
-            Text('Aún no hay estancias', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              isSearch ? 'No se encontraron resultados' : 'Aún no hay estancias', 
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
-            const Text('Añade estancias para empezar a organizar tu hogar.', style: TextStyle(color: AppColors.textSecondary), textAlign: TextAlign.center),
+            Text(
+              isSearch ? 'Intenta buscar con otro término.' : 'Añade estancias para empezar a organizar tu hogar.', 
+              style: const TextStyle(color: AppColors.textSecondary), 
+              textAlign: TextAlign.center
+            ),
           ],
         ),
       ),

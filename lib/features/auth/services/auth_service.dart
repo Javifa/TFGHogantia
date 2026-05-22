@@ -56,6 +56,35 @@ class AuthService {
     await _repository.cerrarSesion();
   }
 
+  /// Recupera la contraseña.
+  Future<void> recuperarContrasena(String email) async {
+    if (email.trim().isEmpty) {
+      throw const AppException('El email es obligatorio');
+    }
+    await _repository.recuperarContrasena(email.trim().toLowerCase());
+  }
+
+  /// Verifica el código OTP de recuperación.
+  Future<void> verificarCodigoRecuperacion(String email, String token) async {
+    if (token.trim().isEmpty || token.length < 5) {
+      throw const AppException('El código debe tener al menos 5 dígitos');
+    }
+    await _repository.verificarCodigoRecuperacion(email.trim().toLowerCase(), token.trim());
+  }
+
+  /// Actualiza la contraseña.
+  Future<void> actualizarContrasena(String nuevaContrasena) async {
+    if (nuevaContrasena.length < 6) {
+      throw const AppException('La contraseña debe tener al menos 6 caracteres');
+    }
+    await _repository.actualizarContrasena(nuevaContrasena);
+  }
+
+  /// Borra la cuenta actual.
+  Future<void> borrarCuenta() async {
+    await _repository.borrarCuenta();
+  }
+
   /// Obtiene el perfil del usuario.
   Future<Usuario?> obtenerPerfil(String userId) async {
     return await _repository.obtenerPerfil(userId);
@@ -67,6 +96,11 @@ class AuthService {
       throw const AppException('El nombre es obligatorio');
     }
     return await _repository.actualizarPerfil(usuario);
+  }
+
+  /// Sube una imagen de avatar a Storage.
+  Future<String> subirAvatar(String usuarioId, String nombreArchivo, List<int> bytes) async {
+    return await _repository.subirAvatar(usuarioId, nombreArchivo, bytes);
   }
 
   /// Stream de cambios de auth.

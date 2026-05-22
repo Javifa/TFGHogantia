@@ -5,7 +5,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/widgets/loading_indicator.dart';
 import '../../../core/widgets/error_widget.dart';
+import '../../../core/widgets/error_widget.dart';
 import '../../../core/widgets/confirm_dialog.dart';
+import 'package:go_router/go_router.dart';
 import '../../productos/facades/productos_facade.dart';
 import '../../productos/screens/widgets/producto_card.dart';
 import '../../productos/screens/widgets/producto_form.dart';
@@ -20,6 +22,15 @@ class EstanciaDetailScreen extends StatefulWidget {
 }
 
 class _EstanciaDetailScreenState extends State<EstanciaDetailScreen> {
+  final _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -54,13 +65,18 @@ class _EstanciaDetailScreenState extends State<EstanciaDetailScreen> {
       ),
       body: Consumer<ProductosFacade>(
         builder: (context, facade, _) {
-          if (facade.cargando && facade.productos.isEmpty) {
+          final productosEstancia = facade.productos.where((p) => p.estanciaId == widget.estanciaId).toList();
+          final productosFiltrados = _searchQuery.isEmpty 
+              ? productosEstancia 
+              : productosEstancia.where((p) => p.nombre.toLowerCase().contains(_searchQuery)).toList();
+
+          if (facade.cargando && productosEstancia.isEmpty) {
             return const AppLoadingIndicator(mensaje: 'Cargando productos...');
           }
-          if (facade.error != null && facade.productos.isEmpty) {
+          if (facade.error != null && productosEstancia.isEmpty) {
             return AppErrorWidget(mensaje: facade.error!, onReintentar: () => facade.cargarProductos(widget.estanciaId));
           }
-          if (facade.productos.isEmpty) return _buildVacio();
+          if (productosEstancia.isEmpty) return _buildVacio(isSearch: false);
 
           return RefreshIndicator(
             onRefresh: () => facade.cargarProductos(widget.estanciaId),
@@ -69,8 +85,37 @@ class _EstanciaDetailScreenState extends State<EstanciaDetailScreen> {
               context: context,
               child: CustomScrollView(
                 slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(hp, 16, hp, 8),
+                      child: TextField(
+                        controller: _searchCtrl,
+                        decoration: InputDecoration(
+                          hintText: 'Buscar producto',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          filled: true,
+                          fillColor: AppColors.card,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (val) {
+                          setState(() {
+                            _searchQuery = val.toLowerCase();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  if (productosFiltrados.isEmpty && _searchQuery.isNotEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _buildVacio(isSearch: true),
+                    ),
                   // Alerta bajo stock
-                  if (facade.productosBajoStock.isNotEmpty)
+                  if (facade.productosBajoStock.where((p) => p.estanciaId == widget.estanciaId).isNotEmpty)
                     SliverToBoxAdapter(
                       child: Container(
                         margin: EdgeInsets.fromLTRB(hp, 8, hp, 0),
@@ -84,30 +129,32 @@ class _EstanciaDetailScreenState extends State<EstanciaDetailScreen> {
                           children: [
                             const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 18),
                             const SizedBox(width: 8),
-                            Text('${facade.productosBajoStock.length} producto(s) con bajo stock',
+                            Text('${facade.productosBajoStock.where((p) => p.estanciaId == widget.estanciaId).length} producto(s) con bajo stock',
                                 style: const TextStyle(color: AppColors.warning, fontWeight: FontWeight.w500, fontSize: 13)),
                           ],
                         ),
                       ),
                     ),
                   // Lista
-                  SliverPadding(
-                    padding: EdgeInsets.all(hp),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, i) {
-                          final p = facade.productos[i];
-                          return ProductoCard(
-                            producto: p,
-                            onIncrementar: () => facade.cambiarCantidad(p.id, 1),
-                            onDecrementar: () => facade.cambiarCantidad(p.id, -1),
-                            onEliminar: () => _eliminar(p.id),
-                          );
-                        },
-                        childCount: facade.productos.length,
+                  if (productosFiltrados.isNotEmpty)
+                    SliverPadding(
+                      padding: EdgeInsets.all(hp),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) {
+                            final p = productosFiltrados[i];
+                            return ProductoCard(
+                              producto: p,
+                              onIncrementar: () => facade.cambiarCantidad(p.id, 1),
+                              onDecrementar: () => facade.cambiarCantidad(p.id, -1),
+                              onEliminar: () => _eliminar(p.id),
+                              onTap: () => context.go('/estancia/${widget.estanciaId}/producto/${p.id}'),
+                            );
+                          },
+                          childCount: productosFiltrados.length,
+                        ),
                       ),
                     ),
-                  ),
                   const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               ),
@@ -119,7 +166,7 @@ class _EstanciaDetailScreenState extends State<EstanciaDetailScreen> {
     );
   }
 
-  Widget _buildVacio() {
+  Widget _buildVacio({bool isSearch = false}) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -129,14 +176,16 @@ class _EstanciaDetailScreenState extends State<EstanciaDetailScreen> {
             Container(
               width: 72, height: 72,
               decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(18)),
-              child: const Icon(Icons.inventory_2_outlined, size: 36, color: AppColors.primary),
+              child: Icon(isSearch ? Icons.search_off_rounded : Icons.inventory_2_outlined, size: 36, color: AppColors.primary),
             ),
             const SizedBox(height: 20),
-            Text('Sin productos aún', style: Theme.of(context).textTheme.headlineMedium),
+            Text(isSearch ? 'No se encontraron productos' : 'Sin productos aún', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
-            Text('Añade productos para controlar\nel stock de esta estancia', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(onPressed: _agregar, icon: const Icon(Icons.add_rounded, size: 18), label: const Text('Añadir producto')),
+            Text(isSearch ? 'Intenta buscar con otro término.' : 'Añade productos para controlar\nel stock de esta estancia', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
+            if (!isSearch) ...[
+              const SizedBox(height: 24),
+              ElevatedButton.icon(onPressed: _agregar, icon: const Icon(Icons.add_rounded, size: 18), label: const Text('Añadir producto')),
+            ],
           ],
         ),
       ),

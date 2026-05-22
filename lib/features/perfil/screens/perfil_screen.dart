@@ -9,10 +9,27 @@ import '../../../core/widgets/confirm_dialog.dart';
 import '../../auth/facades/auth_facade.dart';
 import '../../estancias/facades/estancias_facade.dart';
 import '../../compras/facades/compras_facade.dart';
+import '../../productos/facades/productos_facade.dart';
+import 'widgets/perfil_form.dart';
 
 /// Pantalla de perfil del usuario (Dark Neon Theme).
-class PerfilScreen extends StatelessWidget {
+class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
+
+  @override
+  State<PerfilScreen> createState() => _PerfilScreenState();
+}
+
+class _PerfilScreenState extends State<PerfilScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ComprasFacade>().cargarTotalMesActual();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,14 +88,24 @@ class PerfilScreen extends StatelessWidget {
                                 border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
                               ),
                               alignment: Alignment.center,
-                              child: Text(
-                                u.nombreVisible.isNotEmpty ? u.nombreVisible[0].toUpperCase() : 'U',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
-                              ),
+                              child: u.avatarUrl != null
+                                  ? ClipOval(
+                                      child: Image.network(
+                                        u.avatarUrl!,
+                                        width: 56,
+                                        height: 56,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: AppColors.primary),
+                                      ),
+                                    )
+                                  : Text(
+                                      u.nombreVisible.isNotEmpty ? u.nombreVisible[0].toUpperCase() : 'U',
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -104,30 +131,14 @@ class PerfilScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'PRO',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.5,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 16),
 
                       // ── Stats Row ──
-                      Consumer2<EstanciasFacade, ComprasFacade>(
-                        builder: (_, estancias, compras, __) {
+                      Consumer3<EstanciasFacade, ComprasFacade, ProductosFacade>(
+                        builder: (_, estancias, compras, productos, __) {
                           return Row(
                             children: [
                               Expanded(
@@ -137,16 +148,16 @@ class PerfilScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              const Expanded(
+                              Expanded(
                                 child: _StatBox(
-                                  valor: '73', // Placeholder for total items
+                                  valor: '${productos.total}',
                                   label: 'Productos',
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _StatBox(
-                                  valor: Formatters.monedaCorto(compras.totalGastado),
+                                  valor: Formatters.moneda(compras.totalGastadoEsteMes),
                                   label: 'Este mes',
                                 ),
                               ),
@@ -169,35 +180,28 @@ class PerfilScreen extends StatelessWidget {
                               icon: Icons.settings_outlined,
                               title: 'Configuración de cuenta',
                               subtitle: 'Nombre, email, contraseña',
-                              onTap: () {},
-                            ),
-                            const Divider(indent: 64, endIndent: 16),
-                            _SettingsTile(
-                              icon: Icons.notifications_none_outlined,
-                              title: 'Notificaciones',
-                              subtitle: 'Alertas de stock, presupuestos',
-                              onTap: () {},
-                            ),
-                            const Divider(indent: 64, endIndent: 16),
-                            _SettingsTile(
-                              icon: Icons.credit_card_outlined,
-                              title: 'Facturación',
-                              subtitle: 'Plan y método de pago',
-                              onTap: () {},
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (_) => PerfilForm(usuario: u),
+                                );
+                              },
                             ),
                             const Divider(indent: 64, endIndent: 16),
                             _SettingsTile(
                               icon: Icons.shield_outlined,
                               title: 'Privacidad',
                               subtitle: 'Datos y seguridad',
-                              onTap: () {},
+                              onTap: () => context.go('/perfil/privacidad'),
                             ),
                             const Divider(indent: 64, endIndent: 16),
                             _SettingsTile(
                               icon: Icons.help_outline_rounded,
                               title: 'Centro de ayuda',
                               subtitle: 'Preguntas frecuentes y soporte',
-                              onTap: () {},
+                              onTap: () => context.go('/perfil/ayuda'),
                             ),
                           ],
                         ),

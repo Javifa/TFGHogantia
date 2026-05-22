@@ -16,7 +16,7 @@ class ProductosFacade extends ChangeNotifier {
   bool _cargando = false;
   String? _error;
   String? _estanciaIdActual;
-  bool _modoDemo = false;
+  bool get _modoDemo => SupabaseConfig.modoInvitado;
 
   // ── Getters ──
   List<Producto> get productos => _productos;
@@ -39,7 +39,7 @@ class ProductosFacade extends ChangeNotifier {
 
   /// Activa el modo demo.
   void activarModoDemo() {
-    _modoDemo = true;
+    // Ya no establece estado local, depende de SupabaseConfig.
   }
 
   /// Carga productos de una estancia.
@@ -47,9 +47,9 @@ class ProductosFacade extends ChangeNotifier {
     _estanciaIdActual = estanciaId;
 
     if (_modoDemo) {
-      _productos = List.from(
-        DatosDemo.productosPorEstancia[estanciaId] ?? [],
-      );
+      final nuevos = DatosDemo.productosPorEstancia[estanciaId] ?? [];
+      _productos.removeWhere((p) => p.estanciaId == estanciaId);
+      _productos.addAll(nuevos);
       notifyListeners();
       return;
     }
@@ -59,7 +59,9 @@ class ProductosFacade extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _productos = await _service.obtenerPorEstancia(estanciaId);
+      final nuevos = await _service.obtenerPorEstancia(estanciaId);
+      _productos.removeWhere((p) => p.estanciaId == estanciaId);
+      _productos.addAll(nuevos);
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -131,9 +133,15 @@ class ProductosFacade extends ChangeNotifier {
     int cantidad = 0,
     int cantidadMinima = 0,
     String? unidad,
+    double? precioUnitario,
     String? notas,
+    Uint8List? imagenTicket,
   }) async {
     if (_modoDemo) {
+      String? mockUrl;
+      if (imagenTicket != null) {
+        mockUrl = 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop';
+      }
       final nuevo = Producto(
         id: DatosDemo.generarId(),
         estanciaId: estanciaId,
@@ -143,6 +151,8 @@ class ProductosFacade extends ChangeNotifier {
         cantidad: cantidad,
         cantidadMinima: cantidadMinima,
         unidad: unidad,
+        precioUnitario: precioUnitario,
+        ticketUrl: mockUrl,
         notas: notas,
         createdAt: DateTime.now(),
       );
@@ -168,10 +178,11 @@ class ProductosFacade extends ChangeNotifier {
         cantidad: cantidad,
         cantidadMinima: cantidadMinima,
         unidad: unidad,
+        precioUnitario: precioUnitario,
         notas: notas,
         createdAt: DateTime.now(),
       );
-      final nuevo = await _service.crear(producto);
+      final nuevo = await _service.crear(producto, imagenTicket: imagenTicket);
       _productos.add(nuevo);
       return true;
     } catch (e) {
@@ -184,11 +195,15 @@ class ProductosFacade extends ChangeNotifier {
   }
 
   /// Actualiza un producto.
-  Future<bool> actualizarProducto(Producto producto) async {
+  Future<bool> actualizarProducto(Producto producto, {Uint8List? nuevaImagenTicket}) async {
     if (_modoDemo) {
-      final index = _productos.indexWhere((p) => p.id == producto.id);
-      if (index >= 0) _productos[index] = producto;
-      if (_productoActual?.id == producto.id) _productoActual = producto;
+      Producto prodFinal = producto;
+      if (nuevaImagenTicket != null) {
+         prodFinal = producto.copyWith(ticketUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop');
+      }
+      final index = _productos.indexWhere((p) => p.id == prodFinal.id);
+      if (index >= 0) _productos[index] = prodFinal;
+      if (_productoActual?.id == prodFinal.id) _productoActual = prodFinal;
       notifyListeners();
       return true;
     }
@@ -198,7 +213,7 @@ class ProductosFacade extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final actualizado = await _service.actualizar(producto);
+      final actualizado = await _service.actualizar(producto, nuevaImagenTicket: nuevaImagenTicket);
       final index = _productos.indexWhere((p) => p.id == producto.id);
       if (index >= 0) _productos[index] = actualizado;
       if (_productoActual?.id == producto.id) _productoActual = actualizado;

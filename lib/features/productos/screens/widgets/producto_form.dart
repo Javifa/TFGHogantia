@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -9,11 +10,16 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../facades/productos_facade.dart';
+import '../../models/producto.dart';
+import '../../../compras/facades/compras_facade.dart';
+import '../../../compras/models/linea_compra.dart';
 
-/// Formulario para crear un producto con opción de adjuntar ticket.
+/// Formulario para crear o editar un producto con opción de adjuntar ticket.
 class ProductoForm extends StatefulWidget {
   final String estanciaId;
-  const ProductoForm({super.key, required this.estanciaId});
+  final Producto? producto;
+  
+  const ProductoForm({super.key, required this.estanciaId, this.producto});
   @override
   State<ProductoForm> createState() => _ProductoFormState();
 }
@@ -29,6 +35,26 @@ class _ProductoFormState extends State<ProductoForm> {
   String? _unidad;
   Uint8List? _ticketBytes;
   String? _ticketNombre;
+  DateTime _fechaCompra = DateTime.now();
+  bool _sincronizarGasto = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.producto != null) {
+      final p = widget.producto!;
+      _nombreCtrl.text = p.nombre;
+      _cantidadCtrl.text = p.cantidad.toString();
+      _minCtrl.text = p.cantidadMinima.toString();
+      _precioCtrl.text = p.precioUnitario?.toStringAsFixed(2) ?? '';
+      _notasCtrl.text = p.notas ?? '';
+      _categoria = p.categoria;
+      _unidad = p.unidad;
+      if (p.ticketUrl != null) {
+        _ticketNombre = 'Ticket guardado actual';
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -51,18 +77,74 @@ class _ProductoFormState extends State<ProductoForm> {
     });
   }
 
+  Future<void> _seleccionarFecha() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _fechaCompra,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (date != null) {
+      setState(() => _fechaCompra = date);
+    }
+  }
+
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
+    
     final facade = context.read<ProductosFacade>();
-    final ok = await facade.crearProducto(
-      estanciaId: widget.estanciaId,
-      nombre: _nombreCtrl.text.trim(),
-      categoria: _categoria,
-      cantidad: int.tryParse(_cantidadCtrl.text) ?? 0,
-      cantidadMinima: int.tryParse(_minCtrl.text) ?? 0,
-      unidad: _unidad,
-      notas: _notasCtrl.text.trim().isEmpty ? null : _notasCtrl.text.trim(),
-    );
+    final nombre = _nombreCtrl.text.trim();
+    final cantidad = int.tryParse(_cantidadCtrl.text) ?? 0;
+    final min = int.tryParse(_minCtrl.text) ?? 0;
+    final notas = _notasCtrl.text.trim().isEmpty ? null : _notasCtrl.text.trim();
+    final precio = _precioCtrl.text.trim().isEmpty ? null : double.parse(_precioCtrl.text.replaceAll(',', '.'));
+
+    bool ok;
+    if (widget.producto != null) {
+      final prodActualizado = widget.producto!.copyWith(
+        nombre: nombre,
+        categoria: _categoria,
+        cantidad: cantidad,
+        cantidadMinima: min,
+        unidad: _unidad,
+        precioUnitario: precio,
+        notas: notas,
+      );
+      ok = await facade.actualizarProducto(prodActualizado, nuevaImagenTicket: _ticketBytes);
+    } else {
+      ok = await facade.crearProducto(
+        estanciaId: widget.estanciaId,
+        nombre: nombre,
+        categoria: _categoria,
+        cantidad: cantidad,
+        cantidadMinima: min,
+        unidad: _unidad,
+        precioUnitario: precio,
+        notas: notas,
+        imagenTicket: _ticketBytes,
+      );
+      if (ok && _sincronizarGasto && precio != null && precio > 0 && mounted) {
+        final c = cantidad > 0 ? cantidad : 1;
+        await context.read<ComprasFacade>().crearCompra(
+          tienda: 'Inventario',
+          concepto: nombre,
+          total: precio * c,
+          fecha: _fechaCompra,
+          imagenTicket: _ticketBytes,
+          lineas: [
+            LineaCompra(
+              id: '',
+              compraId: '',
+              nombreItem: nombre,
+              cantidad: c,
+              precioUnitario: precio,
+              subtotal: precio * c,
+            )
+          ]
+        );
+      }
+    }
+    
     if (ok && mounted) Navigator.of(context).pop();
   }
 
@@ -84,7 +166,7 @@ class _ProductoFormState extends State<ProductoForm> {
               // Drag handle
               Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)))),
               const SizedBox(height: 16),
-              Text('Nuevo producto', style: Theme.of(context).textTheme.headlineMedium),
+              Text(widget.producto == null ? 'Nuevo producto' : 'Editar producto', style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 20),
 
               CustomTextField(controller: _nombreCtrl, label: 'Nombre', hint: 'Ej: Leche', prefixIcon: Icons.inventory_2_outlined, validator: (v) => Validators.requerido(v, 'El nombre')),
@@ -99,9 +181,9 @@ class _ProductoFormState extends State<ProductoForm> {
               const SizedBox(height: 14),
 
               Row(children: [
-                Expanded(child: CustomTextField(controller: _cantidadCtrl, label: 'Cantidad', keyboardType: TextInputType.number, validator: (v) => Validators.numeroPositivo(v, 'Cantidad'))),
+                Expanded(child: CustomTextField(controller: _cantidadCtrl, label: 'Cantidad', keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], validator: (v) => Validators.numeroPositivo(v, 'Cantidad'))),
                 const SizedBox(width: 12),
-                Expanded(child: CustomTextField(controller: _minCtrl, label: 'Mínimo', keyboardType: TextInputType.number, validator: (v) => Validators.numeroPositivo(v, 'Mínimo'))),
+                Expanded(child: CustomTextField(controller: _minCtrl, label: 'Mínimo', keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], validator: (v) => Validators.numeroPositivo(v, 'Mínimo'))),
               ]),
               const SizedBox(height: 14),
 
@@ -115,10 +197,42 @@ class _ProductoFormState extends State<ProductoForm> {
                     onChanged: (v) => setState(() => _unidad = v),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(child: CustomTextField(controller: _precioCtrl, label: 'Precio (€)', hint: '0.00', keyboardType: const TextInputType.numberWithOptions(decimal: true))),
+                Expanded(
+                  child: CustomTextField(
+                    controller: _precioCtrl, 
+                    label: 'Precio (€)', 
+                    hint: '0.00', 
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
+                  )
+                ),
               ]),
               const SizedBox(height: 14),
+
+              if (widget.producto == null) ...[
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Sincronizar como gasto', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                  subtitle: const Text('Añade este importe a los gastos del mes seleccionado.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  value: _sincronizarGasto,
+                  activeColor: AppColors.primary,
+                  onChanged: (v) => setState(() => _sincronizarGasto = v),
+                ),
+                if (_sincronizarGasto)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
+                      child: const Icon(Icons.calendar_today_outlined, color: AppColors.primary, size: 20),
+                    ),
+                    title: const Text('Fecha de compra', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                    subtitle: Text('${_fechaCompra.day.toString().padLeft(2,'0')}/${_fechaCompra.month.toString().padLeft(2,'0')}/${_fechaCompra.year}', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                    trailing: const Text('Cambiar', style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600)),
+                    onTap: _seleccionarFecha,
+                  ),
+                const SizedBox(height: 14),
+              ],
 
               CustomTextField(controller: _notasCtrl, label: 'Notas (opcional)', maxLines: 2, prefixIcon: Icons.notes_outlined),
               const SizedBox(height: 14),
@@ -135,7 +249,7 @@ class _ProductoFormState extends State<ProductoForm> {
               ),
               const SizedBox(height: 20),
 
-              SizedBox(height: 50, child: ElevatedButton(onPressed: _guardar, child: const Text('Crear producto'))),
+              SizedBox(height: 50, child: ElevatedButton(onPressed: _guardar, child: Text(widget.producto == null ? 'Crear producto' : 'Guardar cambios'))),
             ],
           ),
         ),

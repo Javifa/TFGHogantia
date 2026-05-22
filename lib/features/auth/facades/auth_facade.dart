@@ -79,7 +79,10 @@ class AuthFacade extends ChangeNotifier {
   }
 
   /// Entra como invitado con datos de demo.
-  void entrarComoInvitado() {
+  Future<void> entrarComoInvitado() async {
+    if (_authService.usuarioActual != null) {
+      await _authService.cerrarSesion();
+    }
     _modoInvitado = true;
     SupabaseConfig.modoInvitado = true; // Flag estático para GoRouter
     _usuario = Usuario(
@@ -108,6 +111,7 @@ class AuthFacade extends ChangeNotifier {
       );
       await _cargarPerfil();
       _modoInvitado = false;
+      SupabaseConfig.modoInvitado = false;
       return true;
     } catch (e) {
       _error = e.toString();
@@ -136,6 +140,7 @@ class AuthFacade extends ChangeNotifier {
       );
       await _cargarPerfil();
       _modoInvitado = false;
+      SupabaseConfig.modoInvitado = false;
       return true;
     } catch (e) {
       _error = e.toString();
@@ -166,16 +171,93 @@ class AuthFacade extends ChangeNotifier {
     }
   }
 
+  /// Recupera la contraseña.
+  Future<bool> recuperarContrasena(String email) async {
+    _cargando = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.recuperarContrasena(email);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
+  }
+
+  /// Verifica código OTP
+  Future<bool> verificarCodigoRecuperacion(String email, String token) async {
+    _cargando = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.verificarCodigoRecuperacion(email, token);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
+  }
+
+  /// Actualiza la contraseña
+  Future<bool> actualizarContrasena(String nuevaContrasena) async {
+    _cargando = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.actualizarContrasena(nuevaContrasena);
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
+  }
+
+  /// Borra la cuenta permanentemente.
+  Future<bool> borrarCuenta() async {
+    if (_modoInvitado) return false;
+    
+    _cargando = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _authService.borrarCuenta();
+      _usuario = null;
+      _modoInvitado = false;
+      SupabaseConfig.modoInvitado = false;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
+  }
+
   /// Actualiza el perfil del usuario.
   Future<bool> actualizarPerfil({
     String? nombre,
-    String? avatarUrl,
+    Uint8List? avatarBytes,
   }) async {
     if (_usuario == null) return false;
 
     // En modo invitado, actualizar solo localmente
     if (_modoInvitado) {
-      _usuario = _usuario!.copyWith(nombre: nombre, avatarUrl: avatarUrl);
+      _usuario = _usuario!.copyWith(nombre: nombre);
       notifyListeners();
       return true;
     }
@@ -185,8 +267,15 @@ class AuthFacade extends ChangeNotifier {
     notifyListeners();
 
     try {
+      String? nuevaAvatarUrl = _usuario!.avatarUrl;
+      
+      if (avatarBytes != null) {
+        final nombreArchivo = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        nuevaAvatarUrl = await _authService.subirAvatar(_usuario!.id, nombreArchivo, avatarBytes);
+      }
+
       _usuario = await _authService.actualizarPerfil(
-        _usuario!.copyWith(nombre: nombre, avatarUrl: avatarUrl),
+        _usuario!.copyWith(nombre: nombre, avatarUrl: nuevaAvatarUrl),
       );
       return true;
     } catch (e) {

@@ -18,8 +18,10 @@ void main() async {
   // Inicializar Supabase (si las credenciales son válidas)
   try {
     final url = dotenv.env['SUPABASE_URL'] ?? '';
-    if (url.isNotEmpty && !url.contains('tu-proyecto')) {
-      await SupabaseConfig.inicializar();
+    final anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+    
+    if (url.isNotEmpty && anonKey.isNotEmpty) {
+      await SupabaseConfig.inicializar(url: url, anonKey: anonKey);
     }
   } catch (e) {
     debugPrint('⚠️ Supabase no configurado: $e');

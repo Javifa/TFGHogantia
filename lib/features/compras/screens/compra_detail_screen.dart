@@ -7,6 +7,7 @@ import '../../../core/theme/responsive.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/loading_indicator.dart';
 import '../facades/compras_facade.dart';
+import 'widgets/ticket_form.dart';
 
 /// Pantalla de detalle de una compra con soporte de ticket.
 class CompraDetailScreen extends StatefulWidget {
@@ -42,7 +43,28 @@ class _CompraDetailScreenState extends State<CompraDetailScreen> {
     final hp = Responsive.horizontalPadding(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle de compra')),
+      appBar: AppBar(
+        title: const Text('Detalle de compra'),
+        actions: [
+          Consumer<ComprasFacade>(
+            builder: (_, facade, __) {
+              final c = facade.compraActual;
+              if (c == null) return const SizedBox();
+              return IconButton(
+                icon: const Icon(Icons.edit_rounded),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => TicketForm(compra: c),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: Consumer<ComprasFacade>(
         builder: (_, facade, __) {
           if (facade.cargando) return const AppLoadingIndicator();
@@ -67,6 +89,14 @@ class _CompraDetailScreenState extends State<CompraDetailScreen> {
                             children: [
                               Text(c.tienda ?? 'Sin tienda', style: Theme.of(context).textTheme.headlineMedium),
                               const SizedBox(height: 4),
+                              if (c.concepto != null && c.concepto!.isNotEmpty) ...[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
+                                  child: Text(c.concepto!, style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.bold)),
+                                ),
+                                const SizedBox(height: 6),
+                              ],
                               Text(Formatters.fechaLarga(c.fecha), style: const TextStyle(color: AppColors.textSecondary)),
                             ],
                           ),

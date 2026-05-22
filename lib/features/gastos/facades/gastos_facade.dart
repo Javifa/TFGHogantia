@@ -17,7 +17,7 @@ class GastosFacade extends ChangeNotifier {
   String? _error;
   int _anioSeleccionado = DateTime.now().year;
   int _mesSeleccionado = DateTime.now().month;
-  bool _modoDemo = false;
+  bool get _modoDemo => SupabaseConfig.modoInvitado;
 
   // ── Getters ──
   ResumenGastos? get resumenActual => _resumenActual;
@@ -32,7 +32,6 @@ class GastosFacade extends ChangeNotifier {
 
   /// Activa el modo demo.
   void activarModoDemo() {
-    _modoDemo = true;
     _resumenActual = DatosDemo.resumenMesActual;
     _historico = DatosDemo.historico;
     notifyListeners();

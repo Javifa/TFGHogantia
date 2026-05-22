@@ -4,7 +4,7 @@ class SupabaseConstants {
   SupabaseConstants._();
 
   // Tablas
-  static const String tablaPerfiles = 'perfiles';
+  static const String tablaPerfiles = 'usuarios';
   static const String tablaEstancias = 'estancias';
   static const String tablaProductos = 'productos';
   static const String tablaCompras = 'compras';

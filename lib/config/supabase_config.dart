@@ -7,26 +7,23 @@ class SupabaseConfig {
 
   static bool _inicializado = false;
   
-  /// Flag estático de modo invitado (accesible sin Provider).
   static bool modoInvitado = false;
 
-  /// Inicializa la conexión con Supabase.
-  /// Debe llamarse en main() antes de runApp().
-  static Future<void> inicializar() async {
+  // Inicializa la conexión con Supabase.
+  static Future<void> inicializar({required String url, required String anonKey}) async {
     await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+      url: url,
+      anonKey: anonKey,
     );
     _inicializado = true;
   }
 
-  /// Si Supabase se inicializó correctamente.
+  // Si Supabase se inicializa correctamente.
   static bool get inicializado => _inicializado;
 
-  /// Cliente Supabase singleton.
   static SupabaseClient get cliente => Supabase.instance.client;
 
-  /// Usuario autenticado actual (puede ser null).
+  // Pilla el usuario actual.
   static User? get usuarioActual {
     if (!_inicializado) return null;
     try {

@@ -15,12 +15,12 @@ class Formatters {
   /// Formatea un double como moneda. Ej: 12.5 → "12,50 €"
   static String moneda(double valor) => _currencyFormat.format(valor);
 
-  /// Formatea un double como moneda corta. Ej: 1200 → "$1.2k"
+  /// Formatea un double como moneda corta. Ej: 1200 → "1.2k €"
   static String monedaCorto(double valor) {
     if (valor >= 1000) {
-      return '\$${(valor / 1000).toStringAsFixed(1)}k';
+      return '${(valor / 1000).toStringAsFixed(1)}k €';
     }
-    return '\$${valor.toStringAsFixed(0)}';
+    return '${valor.toStringAsFixed(0)} €';
   }
 
   // ── Fechas ──

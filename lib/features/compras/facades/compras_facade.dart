@@ -18,7 +18,7 @@ class ComprasFacade extends ChangeNotifier {
   Compra? _compraActual;
   bool _cargando = false;
   String? _error;
-  bool _modoDemo = false;
+  bool get _modoDemo => SupabaseConfig.modoInvitado;
 
   // ── Getters ──
   List<Compra> get compras => _compras;
@@ -31,12 +31,22 @@ class ComprasFacade extends ChangeNotifier {
   double get totalGastado =>
       _compras.fold(0.0, (sum, c) => sum + c.total);
 
+  double _totalGastadoEsteMes = 0.0;
+  double get totalGastadoEsteMes => _totalGastadoEsteMes;
+
+  double _limiteGastos = 500.0;
+  double get limiteGastos => _limiteGastos;
+  
+  void establecerLimite(double limite) {
+    _limiteGastos = limite;
+    notifyListeners();
+  }
+
   ComprasFacade({ComprasService? service})
       : _service = service ?? ComprasService();
 
   /// Activa el modo demo.
   void activarModoDemo() {
-    _modoDemo = true;
     _compras = List.from(DatosDemo.compras);
     notifyListeners();
   }
@@ -93,6 +103,30 @@ class ComprasFacade extends ChangeNotifier {
     }
   }
 
+  /// Carga y calcula el total gastado en el mes actual.
+  Future<void> cargarTotalMesActual() async {
+    final now = DateTime.now();
+    if (_modoDemo) {
+      _totalGastadoEsteMes = DatosDemo.compras
+          .where((c) => c.fecha.year == now.year && c.fecha.month == now.month)
+          .fold(0.0, (sum, c) => sum + c.total);
+      notifyListeners();
+      return;
+    }
+
+    final userId = SupabaseConfig.usuarioId;
+    if (userId == null) return;
+
+    try {
+      final comprasMes = await _service.obtenerPorMes(userId, now.year, now.month);
+      _totalGastadoEsteMes = comprasMes.fold(0.0, (sum, c) => sum + c.total);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      notifyListeners();
+    }
+  }
+
   /// Carga detalle de una compra.
   Future<void> cargarCompra(String id) async {
     if (_modoDemo) {
@@ -121,6 +155,7 @@ class ComprasFacade extends ChangeNotifier {
   /// Crea una nueva compra con sus líneas.
   Future<bool> crearCompra({
     String? tienda,
+    String? concepto,
     required double total,
     required DateTime fecha,
     List<LineaCompra> lineas = const [],
@@ -131,12 +166,17 @@ class ComprasFacade extends ChangeNotifier {
         id: DatosDemo.generarId(),
         usuarioId: 'invitado',
         tienda: tienda,
+        concepto: concepto,
         total: total,
         fecha: fecha,
         createdAt: DateTime.now(),
         lineas: lineas,
       );
       _compras.insert(0, nueva);
+      final now = DateTime.now();
+      if (nueva.fecha.year == now.year && nueva.fecha.month == now.month) {
+        _totalGastadoEsteMes += nueva.total;
+      }
       notifyListeners();
       return true;
     }
@@ -159,6 +199,7 @@ class ComprasFacade extends ChangeNotifier {
         id: '',
         usuarioId: userId,
         tienda: tienda,
+        concepto: concepto,
         total: total,
         imagenTicketUrl: imagenUrl,
         fecha: fecha,
@@ -167,6 +208,65 @@ class ComprasFacade extends ChangeNotifier {
 
       final nueva = await _service.crear(compra, lineas);
       _compras.insert(0, nueva);
+      final now = DateTime.now();
+      if (nueva.fecha.year == now.year && nueva.fecha.month == now.month) {
+        _totalGastadoEsteMes += nueva.total;
+      }
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
+  }
+
+  /// Actualiza una compra existente.
+  Future<bool> actualizarCompra(
+    Compra compraOriginal, {
+    String? tienda,
+    String? concepto,
+    required double total,
+    required DateTime fecha,
+    Uint8List? nuevaImagenTicket,
+  }) async {
+    if (_modoDemo) {
+      final index = _compras.indexWhere((c) => c.id == compraOriginal.id);
+      if (index >= 0) {
+        _compras[index] = compraOriginal.copyWith(
+          tienda: tienda,
+          concepto: concepto,
+          total: total,
+          fecha: fecha,
+        );
+        if (_compraActual?.id == compraOriginal.id) {
+          _compraActual = _compras[index];
+        }
+      }
+      notifyListeners();
+      return true;
+    }
+
+    _cargando = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final actualizada = await _service.actualizar(
+        compraOriginal.copyWith(tienda: tienda, concepto: concepto, total: total, fecha: fecha),
+        nuevaImagenTicket: nuevaImagenTicket,
+      );
+
+      final index = _compras.indexWhere((c) => c.id == compraOriginal.id);
+      if (index >= 0) {
+        _compras[index] = actualizada;
+      }
+      if (_compraActual?.id == compraOriginal.id) {
+        _compraActual = actualizada;
+      }
+      // Actualizar el total del mes actual re-calculando
+      cargarTotalMesActual();
       return true;
     } catch (e) {
       _error = e.toString();
@@ -194,6 +294,8 @@ class ComprasFacade extends ChangeNotifier {
       await _service.eliminar(id);
       _compras.removeWhere((c) => c.id == id);
       if (_compraActual?.id == id) _compraActual = null;
+      // Actualizar el total del mes actual re-calculando
+      cargarTotalMesActual();
       return true;
     } catch (e) {
       _error = e.toString();

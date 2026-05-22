@@ -8,10 +8,12 @@ class EstanciaCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onEditar;
   final VoidCallback? onEliminar;
+  final int cantidadProductos;
 
   const EstanciaCard({
     super.key,
     required this.estancia,
+    this.cantidadProductos = 0,
     this.onTap,
     this.onEditar,
     this.onEliminar,
@@ -98,9 +100,11 @@ class _EstanciaCardState extends State<EstanciaCard> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          '0 productos', // Muestra items (placeholder)
-                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        Text(
+                          widget.cantidadProductos == 1 
+                              ? '1 producto' 
+                              : '${widget.cantidadProductos} productos',
+                          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -112,7 +116,7 @@ class _EstanciaCardState extends State<EstanciaCard> {
                 top: 8,
                 right: 8,
                 child: PopupMenuButton<String>(
-                  icon: Icon(Icons.more_horiz, size: 20, color: _hovering ? AppColors.textSecondary : Colors.transparent),
+                  icon: Icon(Icons.more_horiz, size: 20, color: _hovering ? AppColors.textPrimary : AppColors.textHint),
                   padding: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   color: AppColors.surfaceVariant,

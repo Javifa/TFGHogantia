@@ -42,8 +42,27 @@ class _LoginScreenState extends State<LoginScreen> {
     if (ok && mounted) context.go('/');
   }
 
-  void _guest() {
-    context.read<AuthFacade>().entrarComoInvitado();
+  Future<void> _recuperarContrasena() async {
+    if (_emailCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, introduce tu email en el campo superior primero')),
+      );
+      return;
+    }
+    final facade = context.read<AuthFacade>();
+    final ok = await facade.recuperarContrasena(_emailCtrl.text);
+    if (mounted && ok) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => _OtpDialog(email: _emailCtrl.text),
+      );
+    }
+  }
+
+  Future<void> _guest() async {
+    await context.read<AuthFacade>().entrarComoInvitado();
+    if (!mounted) return;
     context.read<EstanciasFacade>().activarModoDemo();
     context.read<ProductosFacade>().activarModoDemo();
     context.read<ComprasFacade>().activarModoDemo();
@@ -151,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  gradient: AppColors.heroGradient,
+                  color: Colors.black,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(Icons.home_rounded, size: 32, color: Colors.white),
@@ -207,6 +226,16 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () => setState(() => _showPass = !_showPass),
             ),
           ),
+          
+          // Olvidé mi contraseña
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _recuperarContrasena,
+              child: const Text('¿Has olvidado tu contraseña?'),
+            ),
+          ),
+          
           const SizedBox(height: 8),
 
           // Error
@@ -289,3 +318,100 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+class _OtpDialog extends StatefulWidget {
+  final String email;
+  const _OtpDialog({required this.email});
+
+  @override
+  State<_OtpDialog> createState() => _OtpDialogState();
+}
+
+class _OtpDialogState extends State<_OtpDialog> {
+  final _codeCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+  bool _codeVerified = false;
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _codeCtrl.dispose();
+    _passCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _verificar() async {
+    if (_codeCtrl.text.trim().isEmpty) return;
+    setState(() => _loading = true);
+    final facade = context.read<AuthFacade>();
+    final ok = await facade.verificarCodigoRecuperacion(widget.email, _codeCtrl.text.trim());
+    if (mounted) {
+      setState(() => _loading = false);
+      if (ok) {
+        setState(() => _codeVerified = true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(facade.error ?? 'Código inválido')));
+      }
+    }
+  }
+
+  Future<void> _cambiarPassword() async {
+    if (_passCtrl.text.trim().length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mínimo 6 caracteres')));
+      return;
+    }
+    setState(() => _loading = true);
+    final facade = context.read<AuthFacade>();
+    final ok = await facade.actualizarContrasena(_passCtrl.text);
+    if (mounted) {
+      setState(() => _loading = false);
+      if (ok) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Contraseña cambiada con éxito')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al actualizar')));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(_codeVerified ? 'Nueva Contraseña' : 'Introduce el código'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(_codeVerified 
+            ? 'Introduce tu nueva contraseña segura.'
+            : 'Revisa tu correo electrónico. Te hemos enviado un código de seguridad de 6 dígitos.'),
+          const SizedBox(height: 16),
+          if (!_codeVerified)
+            CustomTextField(
+              controller: _codeCtrl,
+              label: 'Código de 6 dígitos',
+              hint: '123456',
+              keyboardType: TextInputType.number,
+            )
+          else
+            CustomTextField(
+              controller: _passCtrl,
+              label: 'Nueva contraseña',
+              hint: '••••••••',
+              obscureText: true,
+            ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _loading ? null : () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: _loading ? null : (_codeVerified ? _cambiarPassword : _verificar),
+          child: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : Text(_codeVerified ? 'Guardar' : 'Verificar'),
+        ),
+      ],
+    );
+  }
+}
+

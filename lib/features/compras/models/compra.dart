@@ -5,6 +5,7 @@ class Compra {
   final String id;
   final String usuarioId;
   final String? tienda;
+  final String? concepto;
   final double total;
   final String? imagenTicketUrl;
   final DateTime fecha;
@@ -15,6 +16,7 @@ class Compra {
     required this.id,
     required this.usuarioId,
     this.tienda,
+    this.concepto,
     this.total = 0,
     this.imagenTicketUrl,
     required this.fecha,
@@ -27,6 +29,7 @@ class Compra {
       id: json['id'],
       usuarioId: json['usuario_id'],
       tienda: json['tienda'],
+      concepto: json['concepto'],
       total: (json['total'] as num?)?.toDouble() ?? 0,
       imagenTicketUrl: json['imagen_ticket_url'],
       fecha: DateTime.parse(json['fecha']),
@@ -43,6 +46,7 @@ class Compra {
     return {
       'usuario_id': usuarioId,
       'tienda': tienda,
+      'concepto': concepto,
       'total': total,
       'imagen_ticket_url': imagenTicketUrl,
       'fecha': fecha.toIso8601String().split('T').first,
@@ -51,6 +55,7 @@ class Compra {
 
   Compra copyWith({
     String? tienda,
+    String? concepto,
     double? total,
     String? imagenTicketUrl,
     DateTime? fecha,
@@ -60,6 +65,7 @@ class Compra {
       id: id,
       usuarioId: usuarioId,
       tienda: tienda ?? this.tienda,
+      concepto: concepto ?? this.concepto,
       total: total ?? this.total,
       imagenTicketUrl: imagenTicketUrl ?? this.imagenTicketUrl,
       fecha: fecha ?? this.fecha,

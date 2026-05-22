@@ -15,7 +15,7 @@ class EstanciasFacade extends ChangeNotifier {
   Estancia? _estanciaActual;
   bool _cargando = false;
   String? _error;
-  bool _modoDemo = false;
+  bool get _modoDemo => SupabaseConfig.modoInvitado;
 
   // ── Getters ──
   List<Estancia> get estancias => _estancias;
@@ -29,7 +29,6 @@ class EstanciasFacade extends ChangeNotifier {
 
   /// Activa el modo demo con datos de ejemplo.
   void activarModoDemo() {
-    _modoDemo = true;
     _estancias = List.from(DatosDemo.estancias);
     notifyListeners();
   }
