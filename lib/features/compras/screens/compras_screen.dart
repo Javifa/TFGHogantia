@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
+
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/responsive.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/loading_indicator.dart';
 import '../../../core/widgets/error_widget.dart';
 import '../facades/compras_facade.dart';
+import '../services/ocr_service.dart';
 import 'widgets/compra_card.dart';
 import 'widgets/ticket_form.dart';
 
@@ -39,7 +42,133 @@ class _ComprasScreenState extends State<ComprasScreen> {
   }
 
   void _nueva() {
-    showModalBottomSheet(context: context, isScrollControlled: true, backgroundColor: Colors.transparent, builder: (_) => const TicketForm());
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.edit_note_rounded, color: AppColors.primary),
+              title: const Text('Añadir manualmente'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _abrirFormulario();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.document_scanner_rounded, color: AppColors.accent),
+              title: const Text('Añadir ticket inteligente ✨'),
+              subtitle: const Text('La IA detectará tienda, total y fecha por ti'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _elegirFuenteIA();
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _elegirFuenteIA() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded),
+              title: const Text('Hacer foto con la cámara'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _escanearTicketIA(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded),
+              title: const Text('Elegir foto de la galería'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _escanearTicketIA(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _abrirFormulario({String? tienda, double? total, DateTime? fecha, Uint8List? bytes}) {
+    showModalBottomSheet(
+      context: context, 
+      isScrollControlled: true, 
+      backgroundColor: Colors.transparent, 
+      builder: (_) => TicketForm(
+        initialTienda: tienda,
+        initialTotal: total,
+        initialFecha: fecha,
+        initialTicketBytes: bytes,
+      )
+    );
+  }
+
+  Future<void> _escanearTicketIA(ImageSource source) async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('⚠️ La IA de escaneo solo está disponible en la App móvil (Android/iOS).')));
+      return;
+    }
+
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: source, maxWidth: 1200, imageQuality: 80);
+    
+    if (file == null) return;
+
+    if (!mounted) return;
+    
+    // Mostrar loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Procesando ticket con IA...'),
+          ],
+        ),
+      ),
+    );
+
+    final ocrService = OcrService();
+    final datos = await ocrService.procesarTicket(file.path);
+    final bytes = await file.readAsBytes();
+    ocrService.dispose();
+
+    if (!mounted) return;
+    Navigator.pop(context); // Cerrar loading
+
+    if (datos == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se pudo procesar el ticket. Rellénalo manualmente.')));
+      _abrirFormulario(bytes: bytes);
+    } else {
+      _abrirFormulario(
+        tienda: datos.tienda,
+        total: datos.total,
+        fecha: datos.fecha,
+        bytes: bytes,
+      );
+    }
   }
 
   Widget _buildVacio({bool isSearch = false}) {
@@ -73,8 +202,8 @@ class _ComprasScreenState extends State<ComprasScreen> {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: _nueva, 
-                icon: const Icon(Icons.add, size: 18), 
-                label: const Text('Registrar compra')
+                icon: const Icon(Icons.document_scanner_rounded, size: 18), 
+                label: const Text('Escanear o añadir ticket')
               ),
             ],
           ],

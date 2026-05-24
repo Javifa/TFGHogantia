@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'app.dart';
 import 'config/supabase_config.dart';
@@ -8,6 +9,7 @@ import 'config/supabase_config.dart';
 /// Punto de entrada de la aplicación Hogentia.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  usePathUrlStrategy();
 
   // Cargar variables de entorno
   await dotenv.load(fileName: '.env');

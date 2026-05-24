@@ -16,8 +16,19 @@ import '../../models/compra.dart';
 /// Formulario para registrar o editar una compra con opción de adjuntar ticket.
 class TicketForm extends StatefulWidget {
   final Compra? compra;
+  final String? initialTienda;
+  final double? initialTotal;
+  final DateTime? initialFecha;
+  final Uint8List? initialTicketBytes;
 
-  const TicketForm({super.key, this.compra});
+  const TicketForm({
+    super.key, 
+    this.compra,
+    this.initialTienda,
+    this.initialTotal,
+    this.initialFecha,
+    this.initialTicketBytes,
+  });
   @override
   State<TicketForm> createState() => _TicketFormState();
 }
@@ -42,6 +53,15 @@ class _TicketFormState extends State<TicketForm> {
       _fecha = c.fecha;
       if (c.imagenTicketUrl != null) {
         _ticketNombre = 'Ticket actual guardado';
+      }
+    } else {
+      // Datos precargados (ej. por IA)
+      if (widget.initialTienda != null) _tiendaCtrl.text = widget.initialTienda!;
+      if (widget.initialTotal != null) _totalCtrl.text = widget.initialTotal!.toStringAsFixed(2);
+      if (widget.initialFecha != null) _fecha = widget.initialFecha!;
+      if (widget.initialTicketBytes != null) {
+        _ticketBytes = widget.initialTicketBytes;
+        _ticketNombre = 'Ticket escaneado';
       }
     }
   }
