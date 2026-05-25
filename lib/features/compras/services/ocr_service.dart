@@ -17,7 +17,13 @@ class DatosTicketDetectados {
 
 /// Servicio encargado de procesar imágenes y extraer texto usando ML Kit o Gemini.
 class OcrService {
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  TextRecognizer? _textRecognizer;
+
+  OcrService() {
+    if (!kIsWeb) {
+      _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    }
+  }
 
   /// Extrae los datos relevantes de un ticket a partir de la ruta de una imagen o sus bytes (necesario en Web).
   Future<DatosTicketDetectados?> procesarTicket(String imagePath, {Uint8List? imageBytes}) async {
@@ -31,8 +37,9 @@ class OcrService {
     }
 
     try {
+      if (_textRecognizer == null) return null;
       final inputImage = InputImage.fromFilePath(imagePath);
-      final RecognizedText recognizedText = await _textRecognizer.processImage(inputImage);
+      final RecognizedText recognizedText = await _textRecognizer!.processImage(inputImage);
 
       String textoCompleto = recognizedText.text;
       debugPrint('Texto reconocido:\n$textoCompleto');
@@ -176,6 +183,6 @@ class OcrService {
   }
 
   void dispose() {
-    _textRecognizer.close();
+    _textRecognizer?.close();
   }
 }
