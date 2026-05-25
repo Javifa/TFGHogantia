@@ -7,7 +7,7 @@ class GastosService {
   final GastosRepository _repository;
 
   GastosService({GastosRepository? repository})
-      : _repository = repository ?? GastosRepository();
+    : _repository = repository ?? GastosRepository();
 
   /// Genera el resumen de gastos de un mes.
   Future<ResumenGastos> obtenerResumenMes(
@@ -17,7 +17,9 @@ class GastosService {
   ) async {
     final total = await _repository.obtenerTotalMes(usuarioId, anio, mes);
     final gastosPorTienda = await _repository.obtenerGastosPorTienda(
-      usuarioId, anio, mes,
+      usuarioId,
+      anio,
+      mes,
     );
 
     return ResumenGastos(
@@ -34,9 +36,6 @@ class GastosService {
     String usuarioId, {
     int meses = 6,
   }) async {
-    return await _repository.obtenerTotalesMensuales(
-      usuarioId,
-      meses: meses,
-    );
+    return await _repository.obtenerTotalesMensuales(usuarioId, meses: meses);
   }
 }

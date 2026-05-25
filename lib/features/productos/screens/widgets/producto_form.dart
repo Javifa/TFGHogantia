@@ -18,7 +18,7 @@ import '../../../compras/models/linea_compra.dart';
 class ProductoForm extends StatefulWidget {
   final String estanciaId;
   final Producto? producto;
-  
+
   const ProductoForm({super.key, required this.estanciaId, this.producto});
   @override
   State<ProductoForm> createState() => _ProductoFormState();
@@ -68,7 +68,11 @@ class _ProductoFormState extends State<ProductoForm> {
 
   Future<void> _seleccionarTicket() async {
     final picker = ImagePicker();
-    final imagen = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1200, imageQuality: 80);
+    final imagen = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      imageQuality: 80,
+    );
     if (imagen == null) return;
     final bytes = await imagen.readAsBytes();
     setState(() {
@@ -91,13 +95,17 @@ class _ProductoFormState extends State<ProductoForm> {
 
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final facade = context.read<ProductosFacade>();
     final nombre = _nombreCtrl.text.trim();
     final cantidad = int.tryParse(_cantidadCtrl.text) ?? 0;
     final min = int.tryParse(_minCtrl.text) ?? 0;
-    final notas = _notasCtrl.text.trim().isEmpty ? null : _notasCtrl.text.trim();
-    final precio = _precioCtrl.text.trim().isEmpty ? null : double.parse(_precioCtrl.text.replaceAll(',', '.'));
+    final notas = _notasCtrl.text.trim().isEmpty
+        ? null
+        : _notasCtrl.text.trim();
+    final precio = _precioCtrl.text.trim().isEmpty
+        ? null
+        : double.parse(_precioCtrl.text.replaceAll(',', '.'));
 
     bool ok;
     if (widget.producto != null) {
@@ -110,7 +118,10 @@ class _ProductoFormState extends State<ProductoForm> {
         precioUnitario: precio,
         notas: notas,
       );
-      ok = await facade.actualizarProducto(prodActualizado, nuevaImagenTicket: _ticketBytes);
+      ok = await facade.actualizarProducto(
+        prodActualizado,
+        nuevaImagenTicket: _ticketBytes,
+      );
     } else {
       ok = await facade.crearProducto(
         estanciaId: widget.estanciaId,
@@ -141,11 +152,11 @@ class _ProductoFormState extends State<ProductoForm> {
             cantidad: c,
             precioUnitario: precio,
             subtotal: precio * c,
-          )
-        ]
+          ),
+        ],
       );
     }
-    
+
     if (ok && mounted) Navigator.of(context).pop();
   }
 
@@ -156,7 +167,12 @@ class _ProductoFormState extends State<ProductoForm> {
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      padding: EdgeInsets.only(left: 24, right: 24, top: 16, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -165,75 +181,169 @@ class _ProductoFormState extends State<ProductoForm> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Drag handle
-              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)))),
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
-              Text(widget.producto == null ? 'Nuevo producto' : 'Editar producto', style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                widget.producto == null ? 'Nuevo producto' : 'Editar producto',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 20),
 
-              CustomTextField(controller: _nombreCtrl, label: 'Nombre', hint: 'Ej: Leche', prefixIcon: Icons.inventory_2_outlined, validator: (v) => Validators.requerido(v, 'El nombre')),
+              CustomTextField(
+                controller: _nombreCtrl,
+                label: 'Nombre',
+                hint: 'Ej: Leche',
+                prefixIcon: Icons.inventory_2_outlined,
+                validator: (v) => Validators.requerido(v, 'El nombre'),
+              ),
               const SizedBox(height: 14),
 
               DropdownButtonFormField<String>(
                 initialValue: _categoria,
-                decoration: const InputDecoration(labelText: 'Categoría', prefixIcon: Icon(Icons.category_outlined)),
-                items: AppConstants.categoriasProducto.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Categoría',
+                  prefixIcon: Icon(Icons.category_outlined),
+                ),
+                items: AppConstants.categoriasProducto
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
                 onChanged: (v) => setState(() => _categoria = v),
               ),
               const SizedBox(height: 14),
 
-              Row(children: [
-                Expanded(child: CustomTextField(controller: _cantidadCtrl, label: 'Cantidad', keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], validator: (v) => Validators.numeroPositivo(v, 'Cantidad'))),
-                const SizedBox(width: 12),
-                Expanded(child: CustomTextField(controller: _minCtrl, label: 'Mínimo', keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], validator: (v) => Validators.numeroPositivo(v, 'Mínimo'))),
-              ]),
-              const SizedBox(height: 14),
-
-              Row(children: [
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _unidad,
-                    decoration: const InputDecoration(labelText: 'Unidad', prefixIcon: Icon(Icons.straighten_outlined)),
-                    items: AppConstants.unidadesMedida.map((u) => DropdownMenuItem(value: u, child: Text(u))).toList(),
-                    onChanged: (v) => setState(() => _unidad = v),
-                  ),
-                ),
-                Expanded(
-                  child: CustomTextField(
-                    controller: _precioCtrl, 
-                    label: 'Precio (€)', 
-                    hint: '0.00', 
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
-                  )
-                ),
-              ]),
-              const SizedBox(height: 14),
-
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Sincronizar como gasto', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-                  subtitle: const Text('Añade este importe a los gastos del mes seleccionado.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                  value: _sincronizarGasto,
-                  activeColor: AppColors.primary,
-                  onChanged: (v) => setState(() => _sincronizarGasto = v),
-                ),
-                if (_sincronizarGasto)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
-                      child: const Icon(Icons.calendar_today_outlined, color: AppColors.primary, size: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _cantidadCtrl,
+                      label: 'Cantidad',
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (v) =>
+                          Validators.numeroPositivo(v, 'Cantidad'),
                     ),
-                    title: const Text('Fecha de compra', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                    subtitle: Text('${_fechaCompra.day.toString().padLeft(2,'0')}/${_fechaCompra.month.toString().padLeft(2,'0')}/${_fechaCompra.year}', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                    trailing: const Text('Cambiar', style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600)),
-                    onTap: _seleccionarFecha,
                   ),
-                const SizedBox(height: 14),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _minCtrl,
+                      label: 'Mínimo',
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (v) => Validators.numeroPositivo(v, 'Mínimo'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
 
-              CustomTextField(controller: _notasCtrl, label: 'Notas (opcional)', maxLines: 2, prefixIcon: Icons.notes_outlined),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _unidad,
+                      decoration: const InputDecoration(
+                        labelText: 'Unidad',
+                        prefixIcon: Icon(Icons.straighten_outlined),
+                      ),
+                      items: AppConstants.unidadesMedida
+                          .map(
+                            (u) => DropdownMenuItem(value: u, child: Text(u)),
+                          )
+                          .toList(),
+                      onChanged: (v) => setState(() => _unidad = v),
+                    ),
+                  ),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _precioCtrl,
+                      label: 'Precio (€)',
+                      hint: '0.00',
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d*'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  'Sincronizar como gasto',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                ),
+                subtitle: const Text(
+                  'Añade este importe a los gastos del mes seleccionado.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                value: _sincronizarGasto,
+                activeColor: AppColors.primary,
+                onChanged: (v) => setState(() => _sincronizarGasto = v),
+              ),
+              if (_sincronizarGasto)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.calendar_today_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text(
+                    'Fecha de compra',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  subtitle: Text(
+                    '${_fechaCompra.day.toString().padLeft(2, '0')}/${_fechaCompra.month.toString().padLeft(2, '0')}/${_fechaCompra.year}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  trailing: const Text(
+                    'Cambiar',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onTap: _seleccionarFecha,
+                ),
+              const SizedBox(height: 14),
+
+              CustomTextField(
+                controller: _notasCtrl,
+                label: 'Notas (opcional)',
+                maxLines: 2,
+                prefixIcon: Icons.notes_outlined,
+              ),
               const SizedBox(height: 14),
 
               // ── Adjuntar ticket ──
@@ -248,7 +358,17 @@ class _ProductoFormState extends State<ProductoForm> {
               ),
               const SizedBox(height: 20),
 
-              SizedBox(height: 50, child: ElevatedButton(onPressed: _guardar, child: Text(widget.producto == null ? 'Crear producto' : 'Guardar cambios'))),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _guardar,
+                  child: Text(
+                    widget.producto == null
+                        ? 'Crear producto'
+                        : 'Guardar cambios',
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -311,20 +431,46 @@ class _TicketAttachment extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.memory(ticketBytes!, width: 48, height: 48, fit: BoxFit.cover),
+              child: Image.memory(
+                ticketBytes!,
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Ticket adjunto', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: AppColors.success)),
+                  const Text(
+                    'Ticket adjunto',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: AppColors.success,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(ticketNombre ?? 'imagen.jpg', style: const TextStyle(fontSize: 11, color: AppColors.textHint), overflow: TextOverflow.ellipsis),
+                  Text(
+                    ticketNombre ?? 'imagen.jpg',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textHint,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
-            IconButton(icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textHint), onPressed: onEliminar),
+            IconButton(
+              icon: const Icon(
+                Icons.close_rounded,
+                size: 18,
+                color: AppColors.textHint,
+              ),
+              onPressed: onEliminar,
+            ),
           ],
         ),
       );
@@ -343,9 +489,20 @@ class _TicketAttachment extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.camera_alt_outlined, size: 20, color: AppColors.textSecondary),
+            Icon(
+              Icons.camera_alt_outlined,
+              size: 20,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(width: 8),
-            Text('Adjuntar foto de ticket', style: TextStyle(fontSize: 14, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+            Text(
+              'Adjuntar foto de ticket',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),

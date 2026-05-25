@@ -45,7 +45,11 @@ class Validators {
   }
 
   /// Valida longitud máxima.
-  static String? longitudMaxima(String? valor, int max, [String campo = 'Este campo']) {
+  static String? longitudMaxima(
+    String? valor,
+    int max, [
+    String campo = 'Este campo',
+  ]) {
     if (valor != null && valor.length > max) {
       return '$campo no puede exceder $max caracteres';
     }

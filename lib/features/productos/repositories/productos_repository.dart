@@ -95,7 +95,10 @@ class ProductosRepository {
     try {
       await _supabase
           .from(SupabaseConstants.tablaProductos)
-          .update({'activo': false, 'updated_at': DateTime.now().toIso8601String()})
+          .update({
+            'activo': false,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
           .eq('id', id);
     } catch (e) {
       throw AppException.desdeSupabase(e);
@@ -122,7 +125,11 @@ class ProductosRepository {
   }
 
   /// Sube un ticket/factura a Supabase Storage y retorna la URL pública.
-  Future<String> subirTicket(String usuarioId, String nombreArchivo, List<int> bytes) async {
+  Future<String> subirTicket(
+    String usuarioId,
+    String nombreArchivo,
+    List<int> bytes,
+  ) async {
     try {
       final path = '$usuarioId/$nombreArchivo';
       await _supabase.storage

@@ -33,8 +33,8 @@ class AppRouter {
 
     redirect: (BuildContext context, GoRouterState state) {
       final autenticado = SupabaseConfig.estaAutenticado;
-      final enAuth = state.matchedLocation == login ||
-          state.matchedLocation == registro;
+      final enAuth =
+          state.matchedLocation == login || state.matchedLocation == registro;
       if (!autenticado && !enAuth) return login;
       if (autenticado && enAuth) return inicio;
       return null;
@@ -56,73 +56,81 @@ class AppRouter {
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => _AdaptiveShell(shell: shell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: inicio,
-              name: 'estancias',
-              builder: (_, __) => const EstanciasScreen(),
-              routes: [
-                GoRoute(
-                  path: 'estancia/:id',
-                  name: 'estancia-detalle',
-                  builder: (_, state) => EstanciaDetailScreen(
-                    estanciaId: state.pathParameters['id']!,
-                  ),
-                  routes: [
-                    GoRoute(
-                      path: 'producto/:productoId',
-                      name: 'producto-detalle',
-                      builder: (_, state) => ProductoDetailScreen(
-                        productoId: state.pathParameters['productoId']!,
-                      ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: inicio,
+                name: 'estancias',
+                builder: (_, __) => const EstanciasScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'estancia/:id',
+                    name: 'estancia-detalle',
+                    builder: (_, state) => EstanciaDetailScreen(
+                      estanciaId: state.pathParameters['id']!,
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: compras,
-              name: 'compras',
-              builder: (_, __) => const ComprasScreen(),
-              routes: [
-                GoRoute(
-                  path: ':id',
-                  name: 'compra-detalle',
-                  builder: (_, state) => CompraDetailScreen(
-                    compraId: state.pathParameters['id']!,
+                    routes: [
+                      GoRoute(
+                        path: 'producto/:productoId',
+                        name: 'producto-detalle',
+                        builder: (_, state) => ProductoDetailScreen(
+                          productoId: state.pathParameters['productoId']!,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: gastos,
-              name: 'gastos',
-              builder: (_, __) => const GastosScreen(),
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: perfil,
-              name: 'perfil',
-              builder: (_, __) => const PerfilScreen(),
-              routes: [
-                GoRoute(
-                  path: 'privacidad',
-                  name: 'privacidad',
-                  builder: (_, __) => const PrivacidadScreen(),
-                ),
-                GoRoute(
-                  path: 'ayuda',
-                  name: 'ayuda',
-                  builder: (_, __) => const AyudaScreen(),
-                ),
-              ],
-            ),
-          ]),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: compras,
+                name: 'compras',
+                builder: (_, __) => const ComprasScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    name: 'compra-detalle',
+                    builder: (_, state) => CompraDetailScreen(
+                      compraId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: gastos,
+                name: 'gastos',
+                builder: (_, __) => const GastosScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: perfil,
+                name: 'perfil',
+                builder: (_, __) => const PerfilScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'privacidad',
+                    name: 'privacidad',
+                    builder: (_, __) => const PrivacidadScreen(),
+                  ),
+                  GoRoute(
+                    path: 'ayuda',
+                    name: 'ayuda',
+                    builder: (_, __) => const AyudaScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     ],
@@ -136,7 +144,11 @@ class _AdaptiveShell extends StatelessWidget {
 
   static const _destinations = [
     _NavItem(Icons.home_outlined, Icons.home_rounded, 'Inicio'),
-    _NavItem(Icons.receipt_long_outlined, Icons.receipt_long_rounded, 'Compras'),
+    _NavItem(
+      Icons.receipt_long_outlined,
+      Icons.receipt_long_rounded,
+      'Compras',
+    ),
     _NavItem(Icons.insights_outlined, Icons.insights_rounded, 'Gastos'),
     _NavItem(Icons.person_outline, Icons.person_rounded, 'Perfil'),
   ];
@@ -157,7 +169,11 @@ class _AdaptiveShell extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                border: Border(right: BorderSide(color: AppColors.border.withValues(alpha: 0.5))),
+                border: Border(
+                  right: BorderSide(
+                    color: AppColors.border.withValues(alpha: 0.5),
+                  ),
+                ),
               ),
               child: NavigationRail(
                 selectedIndex: shell.currentIndex,
@@ -170,11 +186,13 @@ class _AdaptiveShell extends StatelessWidget {
                   child: _LogoMini(extended: Responsive.isDesktop(context)),
                 ),
                 destinations: _destinations
-                    .map((d) => NavigationRailDestination(
-                          icon: Icon(d.icon),
-                          selectedIcon: Icon(d.selectedIcon),
-                          label: Text(d.label),
-                        ))
+                    .map(
+                      (d) => NavigationRailDestination(
+                        icon: Icon(d.icon),
+                        selectedIcon: Icon(d.selectedIcon),
+                        label: Text(d.label),
+                      ),
+                    )
                     .toList(),
               ),
             ),
@@ -191,17 +209,21 @@ class _AdaptiveShell extends StatelessWidget {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border.withValues(alpha: 0.5))),
+          border: Border(
+            top: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
+          ),
         ),
         child: NavigationBar(
           selectedIndex: shell.currentIndex,
           onDestinationSelected: _onTap,
           destinations: _destinations
-              .map((d) => NavigationDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: d.label,
-                  ))
+              .map(
+                (d) => NavigationDestination(
+                  icon: Icon(d.icon),
+                  selectedIcon: Icon(d.selectedIcon),
+                  label: d.label,
+                ),
+              )
               .toList(),
         ),
       ),

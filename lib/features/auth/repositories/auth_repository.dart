@@ -60,7 +60,10 @@ class AuthRepository {
   }
 
   /// Verifica el código OTP enviado al correo para recuperación de contraseña.
-  Future<AuthResponse> verificarCodigoRecuperacion(String email, String token) async {
+  Future<AuthResponse> verificarCodigoRecuperacion(
+    String email,
+    String token,
+  ) async {
     try {
       return await _supabase.auth.verifyOTP(
         email: email,
@@ -126,7 +129,11 @@ class AuthRepository {
   }
 
   /// Sube un avatar a Supabase Storage y retorna la URL pública.
-  Future<String> subirAvatar(String usuarioId, String nombreArchivo, List<int> bytes) async {
+  Future<String> subirAvatar(
+    String usuarioId,
+    String nombreArchivo,
+    List<int> bytes,
+  ) async {
     try {
       final path = '$usuarioId/$nombreArchivo';
       await _supabase.storage
@@ -142,8 +149,7 @@ class AuthRepository {
   }
 
   /// Stream de cambios de autenticación.
-  Stream<AuthState> get onAuthStateChange =>
-      _supabase.auth.onAuthStateChange;
+  Stream<AuthState> get onAuthStateChange => _supabase.auth.onAuthStateChange;
 
   /// Usuario actual de Supabase Auth.
   User? get usuarioActual => _supabase.auth.currentUser;

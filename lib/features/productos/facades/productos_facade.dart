@@ -35,7 +35,7 @@ class ProductosFacade extends ChangeNotifier {
       _productos.where((p) => p.categoria == categoria).toList();
 
   ProductosFacade({ProductosService? service})
-      : _service = service ?? ProductosService();
+    : _service = service ?? ProductosService();
 
   /// Activa el modo demo.
   void activarModoDemo() {
@@ -140,7 +140,8 @@ class ProductosFacade extends ChangeNotifier {
     if (_modoDemo) {
       String? mockUrl;
       if (imagenTicket != null) {
-        mockUrl = 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop';
+        mockUrl =
+            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop';
       }
       final nuevo = Producto(
         id: DatosDemo.generarId(),
@@ -195,11 +196,17 @@ class ProductosFacade extends ChangeNotifier {
   }
 
   /// Actualiza un producto.
-  Future<bool> actualizarProducto(Producto producto, {Uint8List? nuevaImagenTicket}) async {
+  Future<bool> actualizarProducto(
+    Producto producto, {
+    Uint8List? nuevaImagenTicket,
+  }) async {
     if (_modoDemo) {
       Producto prodFinal = producto;
       if (nuevaImagenTicket != null) {
-         prodFinal = producto.copyWith(ticketUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop');
+        prodFinal = producto.copyWith(
+          ticketUrl:
+              'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=800&fit=crop',
+        );
       }
       final index = _productos.indexWhere((p) => p.id == prodFinal.id);
       if (index >= 0) _productos[index] = prodFinal;
@@ -213,7 +220,10 @@ class ProductosFacade extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final actualizado = await _service.actualizar(producto, nuevaImagenTicket: nuevaImagenTicket);
+      final actualizado = await _service.actualizar(
+        producto,
+        nuevaImagenTicket: nuevaImagenTicket,
+      );
       final index = _productos.indexWhere((p) => p.id == producto.id);
       if (index >= 0) _productos[index] = actualizado;
       if (_productoActual?.id == producto.id) _productoActual = actualizado;

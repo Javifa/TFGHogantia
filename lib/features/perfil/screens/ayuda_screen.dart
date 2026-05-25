@@ -11,58 +11,79 @@ class AyudaScreen extends StatelessWidget {
     final hp = Responsive.horizontalPadding(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Centro de Ayuda'),
-      ),
+      appBar: AppBar(title: const Text('Centro de Ayuda')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(hp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            const Icon(Icons.help_outline_rounded, size: 64, color: AppColors.primary),
+            const Icon(
+              Icons.help_outline_rounded,
+              size: 64,
+              color: AppColors.primary,
+            ),
             const SizedBox(height: 24),
             Text(
               '¿En qué podemos ayudarte?',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             const Text(
               'Encuentra respuestas a las preguntas más frecuentes sobre el uso de Hogentia.',
-              style: TextStyle(fontSize: 16, color: AppColors.textPrimary, height: 1.5),
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.textPrimary,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 32),
             _PreguntaFrecuente(
               pregunta: '¿Cómo añado un producto a una estancia?',
-              respuesta: 'Dirígete a la pestaña "Inicio", selecciona la estancia deseada y pulsa el botón flotante (+) en la esquina inferior derecha. Podrás introducir el nombre, la cantidad y adjuntar el ticket de compra.',
+              respuesta:
+                  'Dirígete a la pestaña "Inicio", selecciona la estancia deseada y pulsa el botón flotante (+) en la esquina inferior derecha. Podrás introducir el nombre, la cantidad y adjuntar el ticket de compra.',
             ),
             _PreguntaFrecuente(
               pregunta: '¿Puedo compartir mis estancias con familiares?',
-              respuesta: 'Actualmente, el sistema está diseñado para un único gestor por cuenta para garantizar la privacidad y consistencia de los datos. Estamos trabajando en la funcionalidad multiusuario para futuras versiones.',
+              respuesta:
+                  'Actualmente, el sistema está diseñado para un único gestor por cuenta para garantizar la privacidad y consistencia de los datos. Estamos trabajando en la funcionalidad multiusuario para futuras versiones.',
             ),
             _PreguntaFrecuente(
               pregunta: '¿Qué pasa si olvido mi contraseña?',
-              respuesta: 'En la pantalla de inicio de sesión, pulsa en "¿Has olvidado tu contraseña?" e introduce tu correo. Te enviaremos un enlace seguro para restablecerla al instante.',
+              respuesta:
+                  'En la pantalla de inicio de sesión, pulsa en "¿Has olvidado tu contraseña?" e introduce tu correo. Te enviaremos un enlace seguro para restablecerla al instante.',
             ),
             _PreguntaFrecuente(
               pregunta: '¿Cómo funcionan los gráficos de gastos?',
-              respuesta: 'La pestaña "Gastos" recopila automáticamente todos los tickets que subes en la sección "Compras". Calcula el total mensual y te muestra una media para que sepas en qué gastas más.',
+              respuesta:
+                  'La pestaña "Gastos" recopila automáticamente todos los tickets que subes en la sección "Compras". Calcula el total mensual y te muestra una media para que sepas en qué gastas más.',
             ),
             const SizedBox(height: 48),
             Center(
               child: Column(
                 children: [
-                  const Text('¿No encuentras lo que buscas?', style: TextStyle(color: AppColors.textSecondary)),
+                  const Text(
+                    '¿No encuentras lo que buscas?',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: () {
-                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-                        const SnackBar(content: Text('Contactando con soporte... (Simulación)')),
-                      );
+                      ScaffoldMessenger.of(context)
+                        ..clearSnackBars()
+                        ..showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Contactando con soporte... (Simulación)',
+                            ),
+                          ),
+                        );
                     },
                     icon: const Icon(Icons.support_agent_rounded),
                     label: const Text('Contactar con Soporte'),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -100,7 +121,11 @@ class _PreguntaFrecuenteState extends State<_PreguntaFrecuente> {
       child: ExpansionTile(
         title: Text(
           widget.pregunta,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.textPrimary),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: AppColors.textPrimary,
+          ),
         ),
         onExpansionChanged: (v) => setState(() => _expandido = v),
         iconColor: AppColors.primary,

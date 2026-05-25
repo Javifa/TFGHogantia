@@ -21,19 +21,36 @@ class PerfilHeader extends StatelessWidget {
           child: CircleAvatar(
             radius: 44,
             backgroundColor: AppColors.surface,
-            backgroundImage: usuario.avatarUrl != null ? NetworkImage(usuario.avatarUrl!) : null,
+            backgroundImage: usuario.avatarUrl != null
+                ? NetworkImage(usuario.avatarUrl!)
+                : null,
             child: usuario.avatarUrl == null
                 ? Text(
                     usuario.nombreVisible[0].toUpperCase(),
-                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.primary),
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
                   )
                 : null,
           ),
         ),
         const SizedBox(height: 14),
-        Text(usuario.nombreVisible, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary, letterSpacing: -0.3)),
+        Text(
+          usuario.nombreVisible,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.3,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(usuario.email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+        Text(
+          usuario.email,
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        ),
       ],
     );
   }

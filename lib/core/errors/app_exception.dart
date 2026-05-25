@@ -5,11 +5,7 @@ class AppException implements Exception {
   final String? codigo;
   final dynamic error;
 
-  const AppException(
-    this.mensaje, {
-    this.codigo,
-    this.error,
-  });
+  const AppException(this.mensaje, {this.codigo, this.error});
 
   @override
   String toString() => mensaje;
@@ -37,22 +33,16 @@ class AppException implements Exception {
       );
     }
     if (mensaje.contains('network') || mensaje.contains('SocketException')) {
-      return const AppException(
-        'Sin conexión a internet',
-        codigo: 'NETWORK',
-      );
+      return const AppException('Sin conexión a internet', codigo: 'NETWORK');
     }
-    if (mensaje.contains('rate limit') || mensaje.contains('over_email_send_rate_limit')) {
+    if (mensaje.contains('rate limit') ||
+        mensaje.contains('over_email_send_rate_limit')) {
       return const AppException(
         'Demasiados intentos. Por favor, desactiva "Confirm email" en Supabase o espera un rato.',
         codigo: 'AUTH_RATE_LIMIT',
       );
     }
 
-    return AppException(
-      'Error: $mensaje',
-      codigo: 'UNKNOWN',
-      error: error,
-    );
+    return AppException('Error: $mensaje', codigo: 'UNKNOWN', error: error);
   }
 }

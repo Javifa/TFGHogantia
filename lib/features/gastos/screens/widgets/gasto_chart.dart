@@ -10,11 +10,18 @@ class GastoChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (datos.isEmpty) {
-      return const Center(child: Text('Sin datos históricos', style: TextStyle(color: AppColors.textSecondary)));
+      return const Center(
+        child: Text(
+          'Sin datos históricos',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+      );
     }
 
     final entries = datos.entries.toList().reversed.toList();
-    final maxY = entries.isEmpty ? 100.0 : entries.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.3;
+    final maxY = entries.isEmpty
+        ? 100.0
+        : entries.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.3;
 
     final List<FlSpot> spots = [];
     for (int i = 0; i < entries.length; i++) {
@@ -32,7 +39,11 @@ class GastoChart extends StatelessWidget {
               return touchedSpots.map((spot) {
                 return LineTooltipItem(
                   '${spot.y.toStringAsFixed(2)} €',
-                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 );
               }).toList();
             },
@@ -49,8 +60,12 @@ class GastoChart extends StatelessWidget {
           ),
         ),
         titlesData: FlTitlesData(
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -58,18 +73,37 @@ class GastoChart extends StatelessWidget {
               interval: 1,
               getTitlesWidget: (value, meta) {
                 final i = value.toInt();
-                if (i < 0 || i >= entries.length) return const SizedBox.shrink();
+                if (i < 0 || i >= entries.length)
+                  return const SizedBox.shrink();
                 final parts = entries[i].key.split('-');
                 if (parts.length < 2) return const SizedBox.shrink();
-                
-                const meses = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+                const meses = [
+                  '',
+                  'Ene',
+                  'Feb',
+                  'Mar',
+                  'Abr',
+                  'May',
+                  'Jun',
+                  'Jul',
+                  'Ago',
+                  'Sep',
+                  'Oct',
+                  'Nov',
+                  'Dic',
+                ];
                 final mesInt = int.tryParse(parts[1]) ?? 1;
-                
+
                 return Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
                     meses[mesInt],
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 );
               },
@@ -81,12 +115,16 @@ class GastoChart extends StatelessWidget {
               interval: maxY > 0 ? (maxY / 4) : 25,
               reservedSize: 46,
               getTitlesWidget: (value, meta) {
-                if (value == maxY) return const SizedBox.shrink(); // No mostrar tope
+                if (value == maxY)
+                  return const SizedBox.shrink(); // No mostrar tope
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: Text(
                     '${value.toInt()}€',
-                    style: const TextStyle(color: AppColors.textHint, fontSize: 11),
+                    style: const TextStyle(
+                      color: AppColors.textHint,
+                      fontSize: 11,
+                    ),
                     textAlign: TextAlign.right,
                   ),
                 );

@@ -44,16 +44,64 @@ class AppTheme {
 
       // ── Tipografía ──
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -1.5, height: 1.1),
-        displayMedium: TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.textPrimary, letterSpacing: -1.0, height: 1.2),
-        headlineLarge: TextStyle(fontSize: 26, fontWeight: FontWeight.w700, color: AppColors.textPrimary, letterSpacing: -0.5),
-        headlineMedium: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: AppColors.textPrimary, letterSpacing: -0.3),
-        titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-        bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary, height: 1.5),
-        bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textSecondary, height: 1.5),
-        bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textHint),
-        labelLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 0.3),
+        displayLarge: TextStyle(
+          fontSize: 40,
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary,
+          letterSpacing: -1.5,
+          height: 1.1,
+        ),
+        displayMedium: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
+          letterSpacing: -1.0,
+          height: 1.2,
+        ),
+        headlineLarge: TextStyle(
+          fontSize: 26,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
+          letterSpacing: -0.5,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+          letterSpacing: -0.3,
+        ),
+        titleLarge: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textPrimary,
+          height: 1.5,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textSecondary,
+          height: 1.5,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textHint,
+        ),
+        labelLarge: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.3,
+        ),
       ),
 
       // ── Botones ──
@@ -63,8 +111,15 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
         ),
       ),
 
@@ -73,15 +128,26 @@ class AppTheme {
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.border, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
         ),
       ),
 
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
 
@@ -107,13 +173,31 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceVariant,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.border, width: 1)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
-        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.border, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: AppColors.error, width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
-        labelStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        labelStyle: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 14,
+        ),
         prefixIconColor: AppColors.textHint,
       ),
 
@@ -133,9 +217,17 @@ class AppTheme {
         indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary);
+            return const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
+            );
           }
-          return const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textHint);
+          return const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textHint,
+          );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -152,17 +244,30 @@ class AppTheme {
         indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         selectedIconTheme: const IconThemeData(color: AppColors.primary),
         unselectedIconTheme: const IconThemeData(color: AppColors.textHint),
-        selectedLabelTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
-        unselectedLabelTextStyle: const TextStyle(fontSize: 12, color: AppColors.textHint),
+        selectedLabelTextStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: AppColors.primary,
+        ),
+        unselectedLabelTextStyle: const TextStyle(
+          fontSize: 12,
+          color: AppColors.textHint,
+        ),
       ),
 
       // ── Divider ──
-      dividerTheme: const DividerThemeData(color: AppColors.divider, thickness: 1, space: 0),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.divider,
+        thickness: 1,
+        space: 0,
+      ),
 
       // ── BottomSheet ──
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
         showDragHandle: false,
       ),
 

@@ -34,8 +34,13 @@ class _GastosScreenState extends State<GastosScreen> {
       appBar: AppBar(title: const Text('Gastos')),
       body: Consumer<GastosFacade>(
         builder: (_, facade, __) {
-          if (facade.cargando && facade.resumenActual == null) return const AppLoadingIndicator(mensaje: 'Cargando gastos...');
-          if (facade.error != null && facade.resumenActual == null) return AppErrorWidget(mensaje: facade.error!, onReintentar: facade.cargarResumenMesActual);
+          if (facade.cargando && facade.resumenActual == null)
+            return const AppLoadingIndicator(mensaje: 'Cargando gastos...');
+          if (facade.error != null && facade.resumenActual == null)
+            return AppErrorWidget(
+              mensaje: facade.error!,
+              onReintentar: facade.cargarResumenMesActual,
+            );
 
           return SingleChildScrollView(
             child: Responsive.constrained(
@@ -49,9 +54,18 @@ class _GastosScreenState extends State<GastosScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(icon: const Icon(Icons.chevron_left_rounded), onPressed: facade.mesAnterior),
-                        Text(facade.resumenActual?.mesTexto ?? '', style: Theme.of(context).textTheme.titleLarge),
-                        IconButton(icon: const Icon(Icons.chevron_right_rounded), onPressed: facade.mesSiguiente),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left_rounded),
+                          onPressed: facade.mesAnterior,
+                        ),
+                        Text(
+                          facade.resumenActual?.mesTexto ?? '',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right_rounded),
+                          onPressed: facade.mesSiguiente,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -59,9 +73,15 @@ class _GastosScreenState extends State<GastosScreen> {
                       ResumenMensualCard(resumen: facade.resumenActual!),
                     const SizedBox(height: 28),
                     if (facade.historico.isNotEmpty) ...[
-                      Text('Evolución mensual', style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                        'Evolución mensual',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                       const SizedBox(height: 16),
-                      SizedBox(height: 240, child: GastoChart(datos: facade.historico)),
+                      SizedBox(
+                        height: 240,
+                        child: GastoChart(datos: facade.historico),
+                      ),
                     ],
                   ],
                 ),

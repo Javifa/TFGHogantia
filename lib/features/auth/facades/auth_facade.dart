@@ -28,7 +28,7 @@ class AuthFacade extends ChangeNotifier {
       _modoInvitado ? 'invitado' : _authService.usuarioActual?.id;
 
   AuthFacade({AuthService? authService})
-      : _authService = authService ?? AuthService() {
+    : _authService = authService ?? AuthService() {
     _inicializarAuth();
   }
 
@@ -54,7 +54,8 @@ class AuthFacade extends ChangeNotifier {
         if (_authService.usuarioActual != null) {
           await _cargarPerfil();
         }
-      } else if (state.event == AuthChangeEvent.signedOut || state.event == AuthChangeEvent.userDeleted) {
+      } else if (state.event == AuthChangeEvent.signedOut ||
+          state.event == AuthChangeEvent.userDeleted) {
         _usuario = null;
         notifyListeners();
       }
@@ -108,10 +109,7 @@ class AuthFacade extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _authService.iniciarSesion(
-        email: email,
-        contrasena: contrasena,
-      );
+      await _authService.iniciarSesion(email: email, contrasena: contrasena);
       await _cargarPerfil();
       _modoInvitado = false;
       SupabaseConfig.modoInvitado = false;
@@ -231,7 +229,7 @@ class AuthFacade extends ChangeNotifier {
   /// Borra la cuenta permanentemente.
   Future<bool> borrarCuenta() async {
     if (_modoInvitado) return false;
-    
+
     _cargando = true;
     _error = null;
     notifyListeners();
@@ -271,10 +269,15 @@ class AuthFacade extends ChangeNotifier {
 
     try {
       String? nuevaAvatarUrl = _usuario!.avatarUrl;
-      
+
       if (avatarBytes != null) {
-        final nombreArchivo = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        nuevaAvatarUrl = await _authService.subirAvatar(_usuario!.id, nombreArchivo, avatarBytes);
+        final nombreArchivo =
+            'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        nuevaAvatarUrl = await _authService.subirAvatar(
+          _usuario!.id,
+          nombreArchivo,
+          avatarBytes,
+        );
       }
 
       _usuario = await _authService.actualizarPerfil(

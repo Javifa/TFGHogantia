@@ -15,14 +15,24 @@ class ResumenGastos {
   });
 
   /// Media de gasto por compra.
-  double get mediaPorCompra =>
-      numCompras > 0 ? totalMes / numCompras : 0;
+  double get mediaPorCompra => numCompras > 0 ? totalMes / numCompras : 0;
 
   /// Nombre del mes legible. Ej: "Mayo 2026"
   String get mesTexto {
     const meses = [
-      '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+      '',
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
     ];
     return '${meses[mes]} $anio';
   }

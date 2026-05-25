@@ -59,10 +59,7 @@ class CustomTextField extends StatelessWidget {
       focusNode: focusNode,
       autofocus: autofocus,
       inputFormatters: inputFormatters,
-      style: const TextStyle(
-        fontSize: 16,
-        color: AppColors.textPrimary,
-      ),
+      style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,

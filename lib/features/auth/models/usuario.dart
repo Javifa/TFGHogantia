@@ -25,17 +25,10 @@ class Usuario {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'nombre': nombre,
-      'avatar_url': avatarUrl,
-    };
+    return {'email': email, 'nombre': nombre, 'avatar_url': avatarUrl};
   }
 
-  Usuario copyWith({
-    String? nombre,
-    String? avatarUrl,
-  }) {
+  Usuario copyWith({String? nombre, String? avatarUrl}) {
     return Usuario(
       id: id,
       email: email,

@@ -26,7 +26,11 @@ class ComprasRepository {
   }
 
   /// Obtiene compras de un mes específico.
-  Future<List<Compra>> obtenerPorMes(String usuarioId, int anio, int mes) async {
+  Future<List<Compra>> obtenerPorMes(
+    String usuarioId,
+    int anio,
+    int mes,
+  ) async {
     try {
       final inicio = DateTime(anio, mes, 1);
       final fin = DateTime(anio, mes + 1, 0); // Último día del mes
@@ -119,7 +123,11 @@ class ComprasRepository {
   }
 
   /// Sube imagen de ticket a Supabase Storage.
-  Future<String> subirImagenTicket(String usuarioId, String nombreArchivo, List<int> bytes) async {
+  Future<String> subirImagenTicket(
+    String usuarioId,
+    String nombreArchivo,
+    List<int> bytes,
+  ) async {
     try {
       final path = '$usuarioId/$nombreArchivo';
       await _supabase.storage

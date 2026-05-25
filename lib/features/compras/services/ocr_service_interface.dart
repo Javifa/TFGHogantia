@@ -13,7 +13,9 @@ class DatosTicketDetectados {
 abstract class OcrService {
   factory OcrService() => getOcrService();
 
-  
-  Future<DatosTicketDetectados?> procesarTicket(String imagePath, {Uint8List? imageBytes});
+  Future<DatosTicketDetectados?> procesarTicket(
+    String imagePath, {
+    Uint8List? imageBytes,
+  });
   void dispose();
 }

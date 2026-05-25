@@ -28,7 +28,7 @@ class GastosFacade extends ChangeNotifier {
   int get mesSeleccionado => _mesSeleccionado;
 
   GastosFacade({GastosService? service})
-      : _service = service ?? GastosService();
+    : _service = service ?? GastosService();
 
   /// Activa el modo demo.
   void activarModoDemo() {

@@ -21,8 +21,8 @@ class PerfilFacade extends ChangeNotifier {
   }
 
   /// Actualiza el avatar del usuario.
-  Future<bool> actualizarAvatar(String avatarUrl) async {
-    return await _authFacade.actualizarPerfil(avatarUrl: avatarUrl);
+  Future<bool> actualizarAvatar(Uint8List avatarBytes) async {
+    return await _authFacade.actualizarPerfil(avatarBytes: avatarBytes);
   }
 
   /// Cierra la sesión.

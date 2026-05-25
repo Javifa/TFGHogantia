@@ -15,7 +15,9 @@ class Responsive {
     final w = MediaQuery.sizeOf(c).width;
     return w >= mobile && w < desktop;
   }
-  static bool isDesktop(BuildContext c) => MediaQuery.sizeOf(c).width >= desktop;
+
+  static bool isDesktop(BuildContext c) =>
+      MediaQuery.sizeOf(c).width >= desktop;
 
   /// Ancho máximo del contenido según el dispositivo.
   static double contentMaxWidth(BuildContext c) {

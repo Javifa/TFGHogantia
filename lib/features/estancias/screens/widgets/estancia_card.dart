@@ -29,12 +29,18 @@ class _EstanciaCardState extends State<EstanciaCard> {
   // Helper para asignar un color de icono basado en el nombre o tipo
   Color _getIconColor() {
     final name = widget.estancia.nombre.toLowerCase();
-    if (name.contains('cocina') || name.contains('kitchen')) return const Color(0xFFF97316); // Orange
-    if (name.contains('baño') || name.contains('bath')) return const Color(0xFF14B8A6); // Teal
-    if (name.contains('dormitorio') || name.contains('bed')) return const Color(0xFFA855F7); // Purple
-    if (name.contains('salon') || name.contains('living')) return const Color(0xFF3B82F6); // Blue
-    if (name.contains('garaje') || name.contains('garage')) return const Color(0xFFEAB308); // Yellow
-    if (name.contains('jardin') || name.contains('garden')) return const Color(0xFF22C55E); // Green
+    if (name.contains('cocina') || name.contains('kitchen'))
+      return const Color(0xFFF97316); // Orange
+    if (name.contains('baño') || name.contains('bath'))
+      return const Color(0xFF14B8A6); // Teal
+    if (name.contains('dormitorio') || name.contains('bed'))
+      return const Color(0xFFA855F7); // Purple
+    if (name.contains('salon') || name.contains('living'))
+      return const Color(0xFF3B82F6); // Blue
+    if (name.contains('garaje') || name.contains('garage'))
+      return const Color(0xFFEAB308); // Yellow
+    if (name.contains('jardin') || name.contains('garden'))
+      return const Color(0xFF22C55E); // Green
     return AppColors.primary;
   }
 
@@ -57,7 +63,9 @@ class _EstanciaCardState extends State<EstanciaCard> {
             color: AppColors.card,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: _hovering ? AppColors.border.withValues(alpha: 0.8) : AppColors.border.withValues(alpha: 0.3),
+              color: _hovering
+                  ? AppColors.border.withValues(alpha: 0.8)
+                  : AppColors.border.withValues(alpha: 0.3),
             ),
             boxShadow: [
               if (_hovering)
@@ -86,7 +94,10 @@ class _EstanciaCardState extends State<EstanciaCard> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
-                        child: Text(widget.estancia.icono, style: TextStyle(fontSize: 22, color: iconColor)),
+                        child: Text(
+                          widget.estancia.icono,
+                          style: TextStyle(fontSize: 22, color: iconColor),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -95,16 +106,23 @@ class _EstanciaCardState extends State<EstanciaCard> {
                       children: [
                         Text(
                           widget.estancia.nombre,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          widget.cantidadProductos == 1 
-                              ? '1 producto' 
+                          widget.cantidadProductos == 1
+                              ? '1 producto'
                               : '${widget.cantidadProductos} productos',
-                          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -116,17 +134,57 @@ class _EstanciaCardState extends State<EstanciaCard> {
                 top: 8,
                 right: 8,
                 child: PopupMenuButton<String>(
-                  icon: Icon(Icons.more_horiz, size: 20, color: _hovering ? AppColors.textPrimary : AppColors.textHint),
+                  icon: Icon(
+                    Icons.more_horiz,
+                    size: 20,
+                    color: _hovering
+                        ? AppColors.textPrimary
+                        : AppColors.textHint,
+                  ),
                   padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   color: AppColors.surfaceVariant,
                   onSelected: (v) {
                     if (v == 'editar') widget.onEditar?.call();
                     if (v == 'eliminar') widget.onEliminar?.call();
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(value: 'editar', child: Row(children: [Icon(Icons.edit_outlined, size: 16, color: AppColors.textPrimary), SizedBox(width: 8), Text('Editar', style: TextStyle(color: AppColors.textPrimary))])),
-                    const PopupMenuItem(value: 'eliminar', child: Row(children: [Icon(Icons.delete_outline, size: 16, color: AppColors.error), SizedBox(width: 8), Text('Eliminar', style: TextStyle(color: AppColors.error))])),
+                    const PopupMenuItem(
+                      value: 'editar',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.edit_outlined,
+                            size: 16,
+                            color: AppColors.textPrimary,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Editar',
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'eliminar',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete_outline,
+                            size: 16,
+                            color: AppColors.error,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Eliminar',
+                            style: TextStyle(color: AppColors.error),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),

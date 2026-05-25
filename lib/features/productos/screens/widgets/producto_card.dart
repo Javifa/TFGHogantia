@@ -31,9 +31,12 @@ class ProductoCard extends StatelessWidget {
             children: [
               // Indicador de stock
               Container(
-                width: 4, height: 48,
+                width: 4,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: producto.bajoStock ? AppColors.warning : AppColors.success,
+                  color: producto.bajoStock
+                      ? AppColors.warning
+                      : AppColors.success,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -43,17 +46,43 @@ class ProductoCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(producto.nombre, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(
+                      producto.nombre,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Text(producto.cantidadTexto, style: TextStyle(fontSize: 13, color: producto.bajoStock ? AppColors.warning : AppColors.textSecondary)),
+                        Text(
+                          producto.cantidadTexto,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: producto.bajoStock
+                                ? AppColors.warning
+                                : AppColors.textSecondary,
+                          ),
+                        ),
                         if (producto.categoria != null) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                            child: Text(producto.categoria!, style: const TextStyle(fontSize: 11, color: AppColors.primary)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              producto.categoria!,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.primary,
+                              ),
+                            ),
                           ),
                         ],
                       ],
@@ -68,14 +97,27 @@ class ProductoCard extends StatelessWidget {
                   _BotonCantidad(icon: Icons.remove, onTap: onDecrementar),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text('${producto.cantidad}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      '${producto.cantidad}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   _BotonCantidad(icon: Icons.add, onTap: onIncrementar),
                 ],
               ),
               // Eliminar
               if (onEliminar != null)
-                IconButton(icon: const Icon(Icons.delete_outline, size: 20, color: AppColors.error), onPressed: onEliminar),
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 20,
+                    color: AppColors.error,
+                  ),
+                  onPressed: onEliminar,
+                ),
             ],
           ),
         ),
@@ -94,8 +136,12 @@ class _BotonCantidad extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 32, height: 32,
-        decoration: BoxDecoration(color: AppColors.surfaceVariant, borderRadius: BorderRadius.circular(8)),
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Icon(icon, size: 18, color: AppColors.textPrimary),
       ),
     );

@@ -25,7 +25,7 @@ class EstanciasFacade extends ChangeNotifier {
   int get total => _estancias.length;
 
   EstanciasFacade({EstanciasService? service})
-      : _service = service ?? EstanciasService();
+    : _service = service ?? EstanciasService();
 
   /// Activa el modo demo con datos de ejemplo.
   void activarModoDemo() {

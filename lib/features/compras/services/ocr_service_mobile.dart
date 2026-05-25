@@ -4,18 +4,29 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'ocr_service_interface.dart';
 
 class OcrServiceImpl implements OcrService {
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  final TextRecognizer _textRecognizer = TextRecognizer(
+    script: TextRecognitionScript.latin,
+  );
 
   @override
-  Future<DatosTicketDetectados?> procesarTicket(String imagePath, {Uint8List? imageBytes}) async {
+  Future<DatosTicketDetectados?> procesarTicket(
+    String imagePath, {
+    Uint8List? imageBytes,
+  }) async {
     try {
       final inputImage = InputImage.fromFilePath(imagePath);
-      final RecognizedText recognizedText = await _textRecognizer.processImage(inputImage);
+      final RecognizedText recognizedText = await _textRecognizer.processImage(
+        inputImage,
+      );
 
       String textoCompleto = recognizedText.text;
       debugPrint('Texto reconocido:\\n$textoCompleto');
 
-      final lineas = textoCompleto.split('\\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+      final lineas = textoCompleto
+          .split('\\n')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
 
       if (lineas.isEmpty) return null;
 
@@ -50,8 +61,10 @@ class OcrServiceImpl implements OcrService {
 
       for (var linea in lineas.reversed) {
         final lineaUpper = linea.toUpperCase();
-        
-        if (lineaUpper.contains('TOTAL') || lineaUpper.contains('IMPORTE') || lineaUpper.contains('PAGAR')) {
+
+        if (lineaUpper.contains('TOTAL') ||
+            lineaUpper.contains('IMPORTE') ||
+            lineaUpper.contains('PAGAR')) {
           buscandoTotal = true;
           final match = precioRegex.firstMatch(linea);
           if (match != null) {
@@ -87,7 +100,6 @@ class OcrServiceImpl implements OcrService {
         fecha: fechaDetectada,
         total: totalDetectado,
       );
-
     } catch (e) {
       debugPrint('Error en OCR: $e');
       return null;

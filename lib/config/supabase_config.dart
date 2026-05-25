@@ -6,15 +6,15 @@ class SupabaseConfig {
   SupabaseConfig._();
 
   static bool _inicializado = false;
-  
+
   static bool modoInvitado = false;
 
   // Inicializa la conexión con Supabase.
-  static Future<void> inicializar({required String url, required String anonKey}) async {
-    await Supabase.initialize(
-      url: url,
-      anonKey: anonKey,
-    );
+  static Future<void> inicializar({
+    required String url,
+    required String anonKey,
+  }) async {
+    await Supabase.initialize(url: url, anonKey: anonKey);
     _inicializado = true;
   }
 
@@ -37,6 +37,5 @@ class SupabaseConfig {
   static String? get usuarioId => usuarioActual?.id;
 
   /// Verifica si hay un usuario autenticado (o en modo invitado).
-  static bool get estaAutenticado =>
-      modoInvitado || usuarioActual != null;
+  static bool get estaAutenticado => modoInvitado || usuarioActual != null;
 }

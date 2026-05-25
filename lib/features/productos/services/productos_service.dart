@@ -8,7 +8,7 @@ class ProductosService {
   final ProductosRepository _repository;
 
   ProductosService({ProductosRepository? repository})
-      : _repository = repository ?? ProductosRepository();
+    : _repository = repository ?? ProductosRepository();
 
   /// Obtiene productos de una estancia.
   Future<List<Producto>> obtenerPorEstancia(String estanciaId) async {
@@ -31,7 +31,8 @@ class ProductosService {
 
     String? ticketUrl = producto.ticketUrl;
     if (imagenTicket != null) {
-      final nombre = 'producto_ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final nombre =
+          'producto_ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
       ticketUrl = await subirTicket(producto.usuarioId, nombre, imagenTicket);
     }
 
@@ -40,13 +41,21 @@ class ProductosService {
   }
 
   /// Actualiza un producto con validación.
-  Future<Producto> actualizar(Producto producto, {List<int>? nuevaImagenTicket}) async {
+  Future<Producto> actualizar(
+    Producto producto, {
+    List<int>? nuevaImagenTicket,
+  }) async {
     _validar(producto);
 
     String? ticketUrl = producto.ticketUrl;
     if (nuevaImagenTicket != null) {
-      final nombre = 'producto_ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      ticketUrl = await subirTicket(producto.usuarioId, nombre, nuevaImagenTicket);
+      final nombre =
+          'producto_ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      ticketUrl = await subirTicket(
+        producto.usuarioId,
+        nombre,
+        nuevaImagenTicket,
+      );
     }
 
     final prodAActualizar = producto.copyWith(ticketUrl: ticketUrl);
@@ -91,7 +100,11 @@ class ProductosService {
   }
 
   /// Sube un ticket al repositorio.
-  Future<String> subirTicket(String usuarioId, String nombre, List<int> bytes) async {
+  Future<String> subirTicket(
+    String usuarioId,
+    String nombre,
+    List<int> bytes,
+  ) async {
     return await _repository.subirTicket(usuarioId, nombre, bytes);
   }
 }

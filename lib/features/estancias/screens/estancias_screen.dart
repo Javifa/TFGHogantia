@@ -68,17 +68,24 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
         child: Consumer2<EstanciasFacade, ProductosFacade>(
           builder: (context, facade, productosFacade, _) {
             if (facade.cargando && facade.estancias.isEmpty) {
-              return const AppLoadingIndicator(mensaje: 'Cargando estancias...');
+              return const AppLoadingIndicator(
+                mensaje: 'Cargando estancias...',
+              );
             }
             if (facade.error != null && facade.estancias.isEmpty) {
-              return AppErrorWidget(mensaje: facade.error!, onReintentar: facade.cargarEstancias);
+              return AppErrorWidget(
+                mensaje: facade.error!,
+                onReintentar: facade.cargarEstancias,
+              );
             }
 
-            final estanciasFiltradas = _searchQuery.isEmpty 
-                ? facade.estancias 
-                : facade.estancias.where((e) => 
-                    e.nombre.toLowerCase().contains(_searchQuery)
-                  ).toList();
+            final estanciasFiltradas = _searchQuery.isEmpty
+                ? facade.estancias
+                : facade.estancias
+                      .where(
+                        (e) => e.nombre.toLowerCase().contains(_searchQuery),
+                      )
+                      .toList();
 
             return RefreshIndicator(
               onRefresh: facade.cargarEstancias,
@@ -110,16 +117,18 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   'Estancias',
-                                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                             Consumer<AuthFacade>(
                               builder: (context, auth, _) {
                                 final usuario = auth.usuario;
-                                final inicial = usuario?.nombreVisible.isNotEmpty == true
+                                final inicial =
+                                    usuario?.nombreVisible.isNotEmpty == true
                                     ? usuario!.nombreVisible[0].toUpperCase()
                                     : '?';
 
@@ -127,7 +136,8 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                                   onTap: () => context.go('/perfil'),
                                   child: CircleAvatar(
                                     radius: 20,
-                                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                                    backgroundColor: AppColors.primary
+                                        .withOpacity(0.1),
                                     backgroundImage: usuario?.avatarUrl != null
                                         ? NetworkImage(usuario!.avatarUrl!)
                                         : null,
@@ -161,7 +171,9 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                             prefixIcon: const Icon(Icons.search_rounded),
                             filled: true,
                             fillColor: AppColors.card,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 14,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide.none,
@@ -190,22 +202,22 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                             crossAxisCount: cols,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 0.9, // Ajustado para el nuevo diseño de tarjeta
+                            childAspectRatio:
+                                0.9, // Ajustado para el nuevo diseño de tarjeta
                           ),
-                          delegate: SliverChildBuilderDelegate(
-                            (context, i) {
-                              final e = estanciasFiltradas[i];
-                              final cantidad = productosFacade.productos.where((p) => p.estanciaId == e.id).length;
-                              return EstanciaCard(
-                                estancia: e,
-                                cantidadProductos: cantidad,
-                                onTap: () => context.go('/estancia/${e.id}'),
-                                onEditar: () => _editar(e),
-                                onEliminar: () => _eliminar(e),
-                              );
-                            },
-                            childCount: estanciasFiltradas.length,
-                          ),
+                          delegate: SliverChildBuilderDelegate((context, i) {
+                            final e = estanciasFiltradas[i];
+                            final cantidad = productosFacade.productos
+                                .where((p) => p.estanciaId == e.id)
+                                .length;
+                            return EstanciaCard(
+                              estancia: e,
+                              cantidadProductos: cantidad,
+                              onTap: () => context.go('/estancia/${e.id}'),
+                              onEditar: () => _editar(e),
+                              onEliminar: () => _eliminar(e),
+                            );
+                          }, childCount: estanciasFiltradas.length),
                         ),
                       ),
 
@@ -235,22 +247,26 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
-                isSearch ? Icons.search_off_rounded : Icons.home_work_outlined, 
-                size: 40, 
-                color: AppColors.textSecondary
+                isSearch ? Icons.search_off_rounded : Icons.home_work_outlined,
+                size: 40,
+                color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              isSearch ? 'No se encontraron resultados' : 'Aún no hay estancias', 
+              isSearch
+                  ? 'No se encontraron resultados'
+                  : 'Aún no hay estancias',
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              isSearch ? 'Intenta buscar con otro término.' : 'Añade estancias para empezar a organizar tu hogar.', 
-              style: const TextStyle(color: AppColors.textSecondary), 
-              textAlign: TextAlign.center
+              isSearch
+                  ? 'Intenta buscar con otro término.'
+                  : 'Añade estancias para empezar a organizar tu hogar.',
+              style: const TextStyle(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -268,7 +284,13 @@ class _EstanciasScreenState extends State<EstanciasScreen> {
   }
 
   Future<void> _eliminar(Estancia e) async {
-    final ok = await ConfirmDialog.mostrar(context, titulo: 'Eliminar estancia', mensaje: '¿Eliminar "${e.nombre}"?\nSe borrarán sus productos.', textoConfirmar: 'Eliminar', esPeligroso: true);
+    final ok = await ConfirmDialog.mostrar(
+      context,
+      titulo: 'Eliminar estancia',
+      mensaje: '¿Eliminar "${e.nombre}"?\nSe borrarán sus productos.',
+      textoConfirmar: 'Eliminar',
+      esPeligroso: true,
+    );
     if (ok && mounted) context.read<EstanciasFacade>().eliminarEstancia(e.id);
   }
 }

@@ -36,8 +36,8 @@ class Compra {
       createdAt: DateTime.parse(json['created_at']),
       lineas: json['lineas_compra'] != null
           ? (json['lineas_compra'] as List)
-              .map((l) => LineaCompra.fromJson(l))
-              .toList()
+                .map((l) => LineaCompra.fromJson(l))
+                .toList()
           : [],
     );
   }
@@ -75,8 +75,7 @@ class Compra {
   }
 
   /// Total calculado desde las líneas.
-  double get totalCalculado =>
-      lineas.fold(0.0, (sum, l) => sum + l.subtotal);
+  double get totalCalculado => lineas.fold(0.0, (sum, l) => sum + l.subtotal);
 
   /// Número de artículos en la compra.
   int get numArticulos => lineas.length;

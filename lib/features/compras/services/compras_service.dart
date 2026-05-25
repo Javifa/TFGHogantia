@@ -11,7 +11,7 @@ class ComprasService {
   final ComprasRepository _repository;
 
   ComprasService({ComprasRepository? repository})
-      : _repository = repository ?? ComprasRepository();
+    : _repository = repository ?? ComprasRepository();
 
   /// Obtiene todas las compras del usuario.
   Future<List<Compra>> obtenerTodas(String usuarioId) async {
@@ -19,7 +19,11 @@ class ComprasService {
   }
 
   /// Obtiene compras de un mes.
-  Future<List<Compra>> obtenerPorMes(String usuarioId, int anio, int mes) async {
+  Future<List<Compra>> obtenerPorMes(
+    String usuarioId,
+    int anio,
+    int mes,
+  ) async {
     return await _repository.obtenerPorMes(usuarioId, anio, mes);
   }
 
@@ -38,15 +42,17 @@ class ComprasService {
     // 2. Crear las líneas con el ID de la compra
     if (lineas.isNotEmpty) {
       final lineasConId = lineas
-          .map((l) => LineaCompra(
-                id: l.id,
-                compraId: compraCreada.id,
-                productoId: l.productoId,
-                nombreItem: l.nombreItem,
-                cantidad: l.cantidad,
-                precioUnitario: l.precioUnitario,
-                subtotal: l.subtotal,
-              ))
+          .map(
+            (l) => LineaCompra(
+              id: l.id,
+              compraId: compraCreada.id,
+              productoId: l.productoId,
+              nombreItem: l.nombreItem,
+              cantidad: l.cantidad,
+              precioUnitario: l.precioUnitario,
+              subtotal: l.subtotal,
+            ),
+          )
           .toList();
       await _repository.agregarLineas(lineasConId);
     }
@@ -56,9 +62,12 @@ class ComprasService {
   }
 
   /// Actualiza una compra y opcionalmente su ticket.
-  Future<Compra> actualizar(Compra compra, {Uint8List? nuevaImagenTicket}) async {
+  Future<Compra> actualizar(
+    Compra compra, {
+    Uint8List? nuevaImagenTicket,
+  }) async {
     String? nuevaUrl = compra.imagenTicketUrl;
-    
+
     if (nuevaImagenTicket != null) {
       final nombre = 'ticket_${DateTime.now().millisecondsSinceEpoch}.jpg';
       nuevaUrl = await subirTicket(compra.usuarioId, nombre, nuevaImagenTicket);
@@ -74,7 +83,11 @@ class ComprasService {
   }
 
   /// Sube una imagen de ticket.
-  Future<String> subirTicket(String usuarioId, String nombre, Uint8List bytes) async {
+  Future<String> subirTicket(
+    String usuarioId,
+    String nombre,
+    Uint8List bytes,
+  ) async {
     return await _repository.subirImagenTicket(usuarioId, nombre, bytes);
   }
 

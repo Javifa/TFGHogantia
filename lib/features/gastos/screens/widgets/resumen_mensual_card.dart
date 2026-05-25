@@ -15,7 +15,8 @@ class ResumenMensualCard extends StatelessWidget {
     final facade = context.watch<ComprasFacade>();
     final limite = facade.limiteGastos > 0 ? facade.limiteGastos : 1.0;
     final porcentaje = (resumen.totalMes / limite).clamp(0.0, 1.0);
-    final porcentajeText = '${(porcentaje * 100).toInt()}% de ${Formatters.moneda(facade.limiteGastos)}';
+    final porcentajeText =
+        '${(porcentaje * 100).toInt()}% de ${Formatters.moneda(facade.limiteGastos)}';
 
     return Container(
       padding: const EdgeInsets.all(28),
@@ -25,9 +26,9 @@ class ResumenMensualCard extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03), 
-            blurRadius: 20, 
-            offset: const Offset(0, 8)
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -47,7 +48,10 @@ class ResumenMensualCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceVariant,
                   borderRadius: BorderRadius.circular(8),
@@ -65,7 +69,7 @@ class ResumenMensualCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           Text(
             Formatters.moneda(resumen.totalMes),
             style: const TextStyle(
@@ -76,9 +80,9 @@ class ResumenMensualCard extends StatelessWidget {
               height: 1.0,
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Progreso y Límite
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,12 +94,19 @@ class ResumenMensualCard extends StatelessWidget {
                     children: [
                       const Text(
                         'Límite recomendado',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () => _mostrarDialogoLimite(context, facade),
-                        child: const Icon(Icons.edit, size: 14, color: AppColors.primary),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 14,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   ),
@@ -139,7 +150,9 @@ class ResumenMensualCard extends StatelessWidget {
   }
 
   void _mostrarDialogoLimite(BuildContext context, ComprasFacade facade) {
-    final ctrl = TextEditingController(text: facade.limiteGastos.toStringAsFixed(0));
+    final ctrl = TextEditingController(
+      text: facade.limiteGastos.toStringAsFixed(0),
+    );
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -153,7 +166,10 @@ class ResumenMensualCard extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
             onPressed: () {
               final val = double.tryParse(ctrl.text);

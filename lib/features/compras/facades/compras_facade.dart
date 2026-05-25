@@ -28,22 +28,21 @@ class ComprasFacade extends ChangeNotifier {
   int get total => _compras.length;
 
   /// Total de todas las compras cargadas.
-  double get totalGastado =>
-      _compras.fold(0.0, (sum, c) => sum + c.total);
+  double get totalGastado => _compras.fold(0.0, (sum, c) => sum + c.total);
 
   double _totalGastadoEsteMes = 0.0;
   double get totalGastadoEsteMes => _totalGastadoEsteMes;
 
   double _limiteGastos = 500.0;
   double get limiteGastos => _limiteGastos;
-  
+
   void establecerLimite(double limite) {
     _limiteGastos = limite;
     notifyListeners();
   }
 
   ComprasFacade({ComprasService? service})
-      : _service = service ?? ComprasService();
+    : _service = service ?? ComprasService();
 
   /// Activa el modo demo.
   void activarModoDemo() {
@@ -118,7 +117,11 @@ class ComprasFacade extends ChangeNotifier {
     if (userId == null) return;
 
     try {
-      final comprasMes = await _service.obtenerPorMes(userId, now.year, now.month);
+      final comprasMes = await _service.obtenerPorMes(
+        userId,
+        now.year,
+        now.month,
+      );
       _totalGastadoEsteMes = comprasMes.fold(0.0, (sum, c) => sum + c.total);
     } catch (e) {
       _error = e.toString();
@@ -254,7 +257,12 @@ class ComprasFacade extends ChangeNotifier {
 
     try {
       final actualizada = await _service.actualizar(
-        compraOriginal.copyWith(tienda: tienda, concepto: concepto, total: total, fecha: fecha),
+        compraOriginal.copyWith(
+          tienda: tienda,
+          concepto: concepto,
+          total: total,
+          fecha: fecha,
+        ),
         nuevaImagenTicket: nuevaImagenTicket,
       );
 

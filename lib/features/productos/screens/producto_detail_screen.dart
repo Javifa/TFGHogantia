@@ -29,24 +29,40 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
 
   Future<void> _adjuntarTicket() async {
     final picker = ImagePicker();
-    final imagen = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1200, imageQuality: 80);
+    final imagen = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      imageQuality: 80,
+    );
     if (imagen == null) return;
-    
+
     final bytes = await imagen.readAsBytes();
-    
+
     if (mounted) {
       final facade = context.read<ProductosFacade>();
       final p = facade.productoActual;
       if (p != null) {
         final ok = await facade.actualizarProducto(p, nuevaImagenTicket: bytes);
         if (ok && mounted) {
-          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-            const SnackBar(content: Text('Ticket adjuntado correctamente'), behavior: SnackBarBehavior.floating),
-          );
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('Ticket adjuntado correctamente'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
         } else if (!ok && mounted) {
-          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-            SnackBar(content: Text(facade.error ?? 'Error al adjuntar ticket. Revisa Supabase.'), backgroundColor: AppColors.error),
-          );
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  facade.error ?? 'Error al adjuntar ticket. Revisa Supabase.',
+                ),
+                backgroundColor: AppColors.error,
+              ),
+            );
         }
       }
     }
@@ -71,10 +87,8 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
                     context: context,
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
-                    builder: (_) => ProductoForm(
-                      estanciaId: p.estanciaId,
-                      producto: p,
-                    ),
+                    builder: (_) =>
+                        ProductoForm(estanciaId: p.estanciaId, producto: p),
                   );
                 },
               );
@@ -86,7 +100,8 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
         builder: (_, facade, __) {
           if (facade.cargando) return const AppLoadingIndicator();
           final p = facade.productoActual;
-          if (p == null) return const Center(child: Text('Producto no encontrado'));
+          if (p == null)
+            return const Center(child: Text('Producto no encontrado'));
 
           return SingleChildScrollView(
             child: Responsive.constrained(
@@ -99,37 +114,85 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
                     // ── Nombre y estado ──
                     Row(
                       children: [
-                        Expanded(child: Text(p.nombre, style: Theme.of(context).textTheme.headlineMedium)),
+                        Expanded(
+                          child: Text(
+                            p.nombre,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                        ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: (p.bajoStock ? AppColors.warning : AppColors.success).withValues(alpha: 0.1),
+                            color:
+                                (p.bajoStock
+                                        ? AppColors.warning
+                                        : AppColors.success)
+                                    .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(p.bajoStock ? 'Bajo stock' : 'OK', style: TextStyle(color: p.bajoStock ? AppColors.warning : AppColors.success, fontWeight: FontWeight.w600, fontSize: 13)),
+                          child: Text(
+                            p.bajoStock ? 'Bajo stock' : 'OK',
+                            style: TextStyle(
+                              color: p.bajoStock
+                                  ? AppColors.warning
+                                  : AppColors.success,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
 
                     // ── Info ──
-                    _InfoTile(label: 'Cantidad', valor: p.cantidadTexto, icono: Icons.inventory_2_outlined),
-                    _InfoTile(label: 'Stock mínimo', valor: '${p.cantidadMinima}', icono: Icons.warning_amber_outlined),
+                    _InfoTile(
+                      label: 'Cantidad',
+                      valor: p.cantidadTexto,
+                      icono: Icons.inventory_2_outlined,
+                    ),
+                    _InfoTile(
+                      label: 'Stock mínimo',
+                      valor: '${p.cantidadMinima}',
+                      icono: Icons.warning_amber_outlined,
+                    ),
                     if (p.categoria != null)
-                      _InfoTile(label: 'Categoría', valor: p.categoria!, icono: Icons.category_outlined),
+                      _InfoTile(
+                        label: 'Categoría',
+                        valor: p.categoria!,
+                        icono: Icons.category_outlined,
+                      ),
                     if (p.precioUnitario != null)
-                      _InfoTile(label: 'Precio', valor: Formatters.moneda(p.precioUnitario!), icono: Icons.euro_outlined),
+                      _InfoTile(
+                        label: 'Precio',
+                        valor: Formatters.moneda(p.precioUnitario!),
+                        icono: Icons.euro_outlined,
+                      ),
                     if (p.notas != null)
-                      _InfoTile(label: 'Notas', valor: p.notas!, icono: Icons.notes_outlined),
+                      _InfoTile(
+                        label: 'Notas',
+                        valor: p.notas!,
+                        icono: Icons.notes_outlined,
+                      ),
                     const SizedBox(height: 16),
 
                     // ── Ticket ──
                     if (p.ticketUrl != null) ...[
-                      Text('Ticket adjunto', style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                        'Ticket adjunto',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                       const SizedBox(height: 8),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(14),
-                        child: Image.network(p.ticketUrl!, width: double.infinity, fit: BoxFit.cover),
+                        child: Image.network(
+                          p.ticketUrl!,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ] else ...[
                       // Opción de adjuntar ticket después
@@ -146,16 +209,39 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                width: 40, height: 40,
-                                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
-                                child: const Icon(Icons.camera_alt_outlined, color: AppColors.primary, size: 20),
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.08,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Adjuntar ticket', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.textPrimary)),
-                                  Text('Sube la foto del recibo', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+                                  Text(
+                                    'Adjuntar ticket',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Sube la foto del recibo',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textHint,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -163,7 +249,7 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                    ]
+                    ],
                   ],
                 ),
               ),
@@ -179,19 +265,33 @@ class _InfoTile extends StatelessWidget {
   final String label;
   final String valor;
   final IconData icono;
-  const _InfoTile({required this.label, required this.valor, required this.icono});
+  const _InfoTile({
+    required this.label,
+    required this.valor,
+    required this.icono,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: Container(
-          width: 40, height: 40,
-          decoration: BoxDecoration(color: AppColors.surfaceVariant, borderRadius: BorderRadius.circular(10)),
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceVariant,
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(icono, color: AppColors.primary, size: 20),
         ),
-        title: Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-        subtitle: Text(valor, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
+        subtitle: Text(
+          valor,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        ),
       ),
     );
   }

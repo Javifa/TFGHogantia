@@ -45,16 +45,28 @@ class _ComprasScreenState extends State<ComprasScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 8),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2))),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.edit_note_rounded, color: AppColors.primary),
+              leading: const Icon(
+                Icons.edit_note_rounded,
+                color: AppColors.primary,
+              ),
               title: const Text('Añadir manualmente'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -62,9 +74,14 @@ class _ComprasScreenState extends State<ComprasScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.document_scanner_rounded, color: AppColors.accent),
+              leading: const Icon(
+                Icons.document_scanner_rounded,
+                color: AppColors.accent,
+              ),
               title: const Text('Añadir ticket inteligente'),
-              subtitle: const Text('La IA detectará tienda, total y fecha por ti'),
+              subtitle: const Text(
+                'La IA detectará tienda, total y fecha por ti',
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _elegirFuenteIA();
@@ -107,29 +124,38 @@ class _ComprasScreenState extends State<ComprasScreen> {
     );
   }
 
-  void _abrirFormulario({String? tienda, double? total, DateTime? fecha, Uint8List? bytes}) {
+  void _abrirFormulario({
+    String? tienda,
+    double? total,
+    DateTime? fecha,
+    Uint8List? bytes,
+  }) {
     showModalBottomSheet(
-      context: context, 
-      isScrollControlled: true, 
-      backgroundColor: Colors.transparent, 
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (_) => TicketForm(
         initialTienda: tienda,
         initialTotal: total,
         initialFecha: fecha,
         initialTicketBytes: bytes,
-      )
+      ),
     );
   }
 
   Future<void> _escanearTicketIA(ImageSource source) async {
     try {
       final picker = ImagePicker();
-      final file = await picker.pickImage(source: source, maxWidth: 1200, imageQuality: 80);
-      
+      final file = await picker.pickImage(
+        source: source,
+        maxWidth: 1200,
+        imageQuality: 80,
+      );
+
       if (file == null) return;
 
       if (!mounted) return;
-      
+
       // Mostrar loading
       showDialog(
         context: context,
@@ -148,29 +174,51 @@ class _ComprasScreenState extends State<ComprasScreen> {
 
       final bytes = await file.readAsBytes();
       final ocrService = OcrService();
-      final datos = await ocrService.procesarTicket(file.path, imageBytes: bytes);
+      final datos = await ocrService.procesarTicket(
+        file.path,
+        imageBytes: bytes,
+      );
       ocrService.dispose();
 
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop(); // Cerrar loading
 
       if (datos == null) {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('No se han detectado datos claros en el ticket.')));
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text('No se han detectado datos claros en el ticket.'),
+            ),
+          );
       } else {
-        _abrirFormulario(tienda: datos.tienda, total: datos.total, fecha: datos.fecha, bytes: bytes);
+        _abrirFormulario(
+          tienda: datos.tienda,
+          total: datos.total,
+          fecha: datos.fecha,
+          bytes: bytes,
+        );
       }
     } catch (e, stack) {
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop(); // Intentar cerrar loading si sigue ahí
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pop(); // Intentar cerrar loading si sigue ahí
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Error Web'),
-          content: SingleChildScrollView(child: Text('Error: $e\n\nStack: $stack')),
+          content: SingleChildScrollView(
+            child: Text('Error: $e\n\nStack: $stack'),
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))
-          ]
-        )
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
     }
   }
@@ -183,31 +231,42 @@ class _ComprasScreenState extends State<ComprasScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 72, height: 72,
-              decoration: BoxDecoration(color: AppColors.accent.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(18)),
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(18),
+              ),
               child: Icon(
-                isSearch ? Icons.search_off_rounded : Icons.receipt_long_outlined, 
-                size: 36, color: AppColors.accent
+                isSearch
+                    ? Icons.search_off_rounded
+                    : Icons.receipt_long_outlined,
+                size: 36,
+                color: AppColors.accent,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              isSearch ? 'No se encontraron tickets' : 'Sin compras registradas', 
+              isSearch
+                  ? 'No se encontraron tickets'
+                  : 'Sin compras registradas',
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              isSearch ? 'Intenta buscar con otro término.' : 'Añade tus tickets de compra.', 
-              style: const TextStyle(color: AppColors.textSecondary), 
-              textAlign: TextAlign.center
+              isSearch
+                  ? 'Intenta buscar con otro término.'
+                  : 'Añade tus tickets de compra.',
+              style: const TextStyle(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
             if (!isSearch) ...[
               const SizedBox(height: 24),
               ElevatedButton.icon(
-                onPressed: _nueva, 
-                icon: const Icon(Icons.document_scanner_rounded, size: 18), 
-                label: const Text('Escanear o añadir ticket')
+                onPressed: _nueva,
+                icon: const Icon(Icons.document_scanner_rounded, size: 18),
+                label: const Text('Escanear o añadir ticket'),
               ),
             ],
           ],
@@ -224,14 +283,23 @@ class _ComprasScreenState extends State<ComprasScreen> {
       appBar: AppBar(title: const Text('Compras')),
       body: Consumer<ComprasFacade>(
         builder: (_, facade, __) {
-          if (facade.cargando && facade.compras.isEmpty) return const AppLoadingIndicator(mensaje: 'Cargando compras...');
-          if (facade.error != null && facade.compras.isEmpty) return AppErrorWidget(mensaje: facade.error!, onReintentar: facade.cargarCompras);
-          
-          final comprasFiltradas = _searchQuery.isEmpty 
-              ? facade.compras 
-              : facade.compras.where((c) => 
-                  c.tienda?.toLowerCase().contains(_searchQuery) ?? false
-                ).toList();
+          if (facade.cargando && facade.compras.isEmpty)
+            return const AppLoadingIndicator(mensaje: 'Cargando compras...');
+          if (facade.error != null && facade.compras.isEmpty)
+            return AppErrorWidget(
+              mensaje: facade.error!,
+              onReintentar: facade.cargarCompras,
+            );
+
+          final comprasFiltradas = _searchQuery.isEmpty
+              ? facade.compras
+              : facade.compras
+                    .where(
+                      (c) =>
+                          c.tienda?.toLowerCase().contains(_searchQuery) ??
+                          false,
+                    )
+                    .toList();
 
           return Responsive.constrained(
             context: context,
@@ -268,18 +336,28 @@ class _ComprasScreenState extends State<ComprasScreen> {
                             builder: (context, constraints) => ListView(
                               children: [
                                 Container(
-                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                                  child: _buildVacio(isSearch: _searchQuery.isNotEmpty),
+                                  constraints: BoxConstraints(
+                                    minHeight: constraints.maxHeight,
+                                  ),
+                                  child: _buildVacio(
+                                    isSearch: _searchQuery.isNotEmpty,
+                                  ),
                                 ),
                               ],
                             ),
                           )
                         : ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: hp, vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: hp,
+                              vertical: 8,
+                            ),
                             itemCount: comprasFiltradas.length,
                             itemBuilder: (_, i) {
                               final c = comprasFiltradas[i];
-                              return CompraCard(compra: c, onTap: () => context.go('/compras/${c.id}'));
+                              return CompraCard(
+                                compra: c,
+                                onTap: () => context.go('/compras/${c.id}'),
+                              );
                             },
                           ),
                   ),
@@ -289,14 +367,24 @@ class _ComprasScreenState extends State<ComprasScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(heroTag: 'fab_compras', onPressed: _nueva, child: const Icon(Icons.add_rounded)),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_compras',
+        onPressed: _nueva,
+        child: const Icon(Icons.add_rounded),
+      ),
     );
   }
 
-  Widget _buildResumenGastos(BuildContext context, ComprasFacade facade, double hp) {
+  Widget _buildResumenGastos(
+    BuildContext context,
+    ComprasFacade facade,
+    double hp,
+  ) {
     final gastado = facade.totalGastadoEsteMes;
     final limite = facade.limiteGastos;
-    final double progreso = limite > 0 ? (gastado / limite).clamp(0.0, 1.0) : 1.0;
+    final double progreso = limite > 0
+        ? (gastado / limite).clamp(0.0, 1.0)
+        : 1.0;
     final bool excedido = gastado > limite;
 
     return Padding(
@@ -306,7 +394,9 @@ class _ComprasScreenState extends State<ComprasScreen> {
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: excedido ? AppColors.error : AppColors.border),
+          border: Border.all(
+            color: excedido ? AppColors.error : AppColors.border,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,11 +404,21 @@ class _ComprasScreenState extends State<ComprasScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Gastos del mes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Gastos del mes',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 TextButton(
                   onPressed: () => _mostrarDialogoLimite(context, facade),
-                  style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 0), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  child: const Text('Editar límite', style: TextStyle(fontSize: 13, color: AppColors.primary)),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    'Editar límite',
+                    style: TextStyle(fontSize: 13, color: AppColors.primary),
+                  ),
                 ),
               ],
             ),
@@ -329,11 +429,18 @@ class _ComprasScreenState extends State<ComprasScreen> {
               children: [
                 Text(
                   Formatters.moneda(gastado),
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: excedido ? AppColors.error : AppColors.textPrimary),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: excedido ? AppColors.error : AppColors.textPrimary,
+                  ),
                 ),
                 Text(
                   'de ${Formatters.moneda(limite)}',
-                  style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -344,19 +451,28 @@ class _ComprasScreenState extends State<ComprasScreen> {
                 value: progreso,
                 minHeight: 8,
                 backgroundColor: AppColors.surfaceVariant,
-                valueColor: AlwaysStoppedAnimation<Color>(excedido ? AppColors.error : AppColors.primary),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  excedido ? AppColors.error : AppColors.primary,
+                ),
               ),
             ),
             if (excedido) ...[
               const SizedBox(height: 8),
               const Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.error),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 14,
+                    color: AppColors.error,
+                  ),
                   SizedBox(width: 4),
-                  Text('Has superado tu límite mensual', style: TextStyle(fontSize: 12, color: AppColors.error)),
+                  Text(
+                    'Has superado tu límite mensual',
+                    style: TextStyle(fontSize: 12, color: AppColors.error),
+                  ),
                 ],
               ),
-            ]
+            ],
           ],
         ),
       ),
@@ -364,7 +480,9 @@ class _ComprasScreenState extends State<ComprasScreen> {
   }
 
   void _mostrarDialogoLimite(BuildContext context, ComprasFacade facade) {
-    final ctrl = TextEditingController(text: facade.limiteGastos.toStringAsFixed(0));
+    final ctrl = TextEditingController(
+      text: facade.limiteGastos.toStringAsFixed(0),
+    );
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -378,7 +496,10 @@ class _ComprasScreenState extends State<ComprasScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
           ElevatedButton(
             onPressed: () {
               final val = double.tryParse(ctrl.text);

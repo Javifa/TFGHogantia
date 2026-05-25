@@ -44,9 +44,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _recuperarContrasena() async {
     if (_emailCtrl.text.isEmpty) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
-        const SnackBar(content: Text('Por favor, introduce tu email en el campo superior primero')),
-      );
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Por favor, introduce tu email en el campo superior primero',
+            ),
+          ),
+        );
       return;
     }
     final facade = context.read<AuthFacade>();
@@ -74,9 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final isWide = !Responsive.isMobile(context);
 
-    return Scaffold(
-      body: isWide ? _buildDesktop() : _buildMobile(),
-    );
+    return Scaffold(body: isWide ? _buildDesktop() : _buildMobile());
   }
 
   // ── Desktop / Tablet: split layout ──
@@ -87,9 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Expanded(
           flex: 5,
           child: Container(
-            decoration: const BoxDecoration(
-              gradient: AppColors.heroGradient,
-            ),
+            decoration: const BoxDecoration(gradient: AppColors.heroGradient),
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(48),
@@ -102,19 +104,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
                       ),
-                      child: const Icon(Icons.home_rounded, size: 36, color: Colors.white),
+                      child: const Icon(
+                        Icons.home_rounded,
+                        size: 36,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     const Text(
                       'Hogentia',
-                      style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -1),
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -1,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Tu hogar, bajo control.',
-                      style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.8)),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
                     ),
                     const SizedBox(height: 40),
                     // Feature pills
@@ -122,17 +138,35 @@ class _LoginScreenState extends State<LoginScreen> {
                       spacing: 12,
                       runSpacing: 8,
                       alignment: WrapAlignment.center,
-                      children: ['🏠 Estancias', '📦 Stock', '🛒 Compras', '📊 Gastos'].map((t) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                          ),
-                          child: Text(t, style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, fontWeight: FontWeight.w500)),
-                        );
-                      }).toList(),
+                      children:
+                          [
+                            '🏠 Estancias',
+                            '📦 Stock',
+                            '🛒 Compras',
+                            '📊 Gastos',
+                          ].map((t) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                ),
+                              ),
+                              child: Text(
+                                t,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                     ),
                   ],
                 ),
@@ -173,12 +207,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.home_rounded, size: 32, color: Colors.white),
+                child: const Icon(
+                  Icons.home_rounded,
+                  size: 32,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 16),
-              Text('Hogentia', style: Theme.of(context).textTheme.displayMedium),
+              Text(
+                'Hogentia',
+                style: Theme.of(context).textTheme.displayMedium,
+              ),
               const SizedBox(height: 4),
-              Text('Tu hogar, bajo control.', style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                'Tu hogar, bajo control.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: 36),
               _buildForm(),
             ],
@@ -197,9 +241,15 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Título
-          Text('Iniciar sesión', style: Theme.of(context).textTheme.headlineMedium),
+          Text(
+            'Iniciar sesión',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
           const SizedBox(height: 4),
-          Text('Accede a tu hogar digital', style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+            'Accede a tu hogar digital',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           const SizedBox(height: 28),
 
           CustomTextField(
@@ -222,11 +272,17 @@ class _LoginScreenState extends State<LoginScreen> {
             validator: Validators.contrasena,
             onSubmitted: (_) => _login(),
             suffixIcon: IconButton(
-              icon: Icon(_showPass ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.textHint, size: 20),
+              icon: Icon(
+                _showPass
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: AppColors.textHint,
+                size: 20,
+              ),
               onPressed: () => setState(() => _showPass = !_showPass),
             ),
           ),
-          
+
           // Olvidé mi contraseña
           Align(
             alignment: Alignment.centerRight,
@@ -235,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: const Text('¿Has olvidado tu contraseña?'),
             ),
           ),
-          
+
           const SizedBox(height: 8),
 
           // Error
@@ -251,9 +307,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: AppColors.error, size: 18),
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.error,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(f.error!, style: const TextStyle(color: AppColors.error, fontSize: 13))),
+                    Expanded(
+                      child: Text(
+                        f.error!,
+                        style: const TextStyle(
+                          color: AppColors.error,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -269,7 +337,14 @@ class _LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton(
                 onPressed: f.cargando ? null : _login,
                 child: f.cargando
-                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Text('Continuar'),
               ),
             ),
@@ -281,8 +356,14 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('¿Sin cuenta? ', style: Theme.of(context).textTheme.bodyMedium),
-              TextButton(onPressed: () => context.go('/registro'), child: const Text('Crear una')),
+              Text(
+                '¿Sin cuenta? ',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              TextButton(
+                onPressed: () => context.go('/registro'),
+                child: const Text('Crear una'),
+              ),
             ],
           ),
 
@@ -312,7 +393,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           const SizedBox(height: 6),
-          Text('Datos de ejemplo · Sin registro', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            'Datos de ejemplo · Sin registro',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     );
@@ -344,20 +429,29 @@ class _OtpDialogState extends State<_OtpDialog> {
     if (_codeCtrl.text.trim().isEmpty) return;
     setState(() => _loading = true);
     final facade = context.read<AuthFacade>();
-    final ok = await facade.verificarCodigoRecuperacion(widget.email, _codeCtrl.text.trim());
+    final ok = await facade.verificarCodigoRecuperacion(
+      widget.email,
+      _codeCtrl.text.trim(),
+    );
     if (mounted) {
       setState(() => _loading = false);
       if (ok) {
         setState(() => _codeVerified = true);
       } else {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(facade.error ?? 'Código inválido')));
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text(facade.error ?? 'Código inválido')),
+          );
       }
     }
   }
 
   Future<void> _cambiarPassword() async {
     if (_passCtrl.text.trim().length < 6) {
-      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Mínimo 6 caracteres')));
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(const SnackBar(content: Text('Mínimo 6 caracteres')));
       return;
     }
     setState(() => _loading = true);
@@ -367,9 +461,17 @@ class _OtpDialogState extends State<_OtpDialog> {
       setState(() => _loading = false);
       if (ok) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Contraseña cambiada con éxito')));
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            const SnackBar(content: Text('Contraseña cambiada con éxito')),
+          );
       } else {
-        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al actualizar')));
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(content: Text(facade.error ?? 'Error al actualizar')),
+          );
       }
     }
   }
@@ -381,9 +483,11 @@ class _OtpDialogState extends State<_OtpDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_codeVerified 
-            ? 'Introduce tu nueva contraseña segura.'
-            : 'Revisa tu correo electrónico. Te hemos enviado un código de seguridad de 6 dígitos.'),
+          Text(
+            _codeVerified
+                ? 'Introduce tu nueva contraseña segura.'
+                : 'Revisa tu correo electrónico. Te hemos enviado un código de seguridad de 6 dígitos.',
+          ),
           const SizedBox(height: 16),
           if (!_codeVerified)
             CustomTextField(
@@ -407,11 +511,18 @@ class _OtpDialogState extends State<_OtpDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: _loading ? null : (_codeVerified ? _cambiarPassword : _verificar),
-          child: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : Text(_codeVerified ? 'Guardar' : 'Verificar'),
+          onPressed: _loading
+              ? null
+              : (_codeVerified ? _cambiarPassword : _verificar),
+          child: _loading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(_codeVerified ? 'Guardar' : 'Verificar'),
         ),
       ],
     );
   }
 }
-

@@ -50,7 +50,7 @@ class Formatters {
     return texto[0].toUpperCase() + texto.substring(1).toLowerCase();
   }
 
-  /// Trunca texto con elipsis. Ej: "Texto muy largo..." 
+  /// Trunca texto con elipsis. Ej: "Texto muy largo..."
   static String truncar(String texto, int maxLength) {
     if (texto.length <= maxLength) return texto;
     return '${texto.substring(0, maxLength)}...';

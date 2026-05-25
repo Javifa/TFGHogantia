@@ -45,10 +45,7 @@ class ConfirmDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: Text(
-        titulo,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      title: Text(titulo, style: const TextStyle(fontWeight: FontWeight.w600)),
       content: Text(
         mensaje,
         style: TextStyle(

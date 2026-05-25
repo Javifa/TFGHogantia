@@ -21,7 +21,7 @@ void main() async {
   try {
     final url = dotenv.env['SUPABASE_URL'] ?? '';
     final anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
-    
+
     if (url.isNotEmpty && anonKey.isNotEmpty) {
       await SupabaseConfig.inicializar(url: url, anonKey: anonKey);
     }

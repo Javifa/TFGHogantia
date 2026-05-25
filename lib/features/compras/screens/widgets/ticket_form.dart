@@ -22,7 +22,7 @@ class TicketForm extends StatefulWidget {
   final Uint8List? initialTicketBytes;
 
   const TicketForm({
-    super.key, 
+    super.key,
     this.compra,
     this.initialTienda,
     this.initialTotal,
@@ -56,8 +56,10 @@ class _TicketFormState extends State<TicketForm> {
       }
     } else {
       // Datos precargados (ej. por IA)
-      if (widget.initialTienda != null) _tiendaCtrl.text = widget.initialTienda!;
-      if (widget.initialTotal != null) _totalCtrl.text = widget.initialTotal!.toStringAsFixed(2);
+      if (widget.initialTienda != null)
+        _tiendaCtrl.text = widget.initialTienda!;
+      if (widget.initialTotal != null)
+        _totalCtrl.text = widget.initialTotal!.toStringAsFixed(2);
       if (widget.initialFecha != null) _fecha = widget.initialFecha!;
       if (widget.initialTicketBytes != null) {
         _ticketBytes = widget.initialTicketBytes;
@@ -76,7 +78,11 @@ class _TicketFormState extends State<TicketForm> {
 
   Future<void> _seleccionarTicket() async {
     final picker = ImagePicker();
-    final imagen = await picker.pickImage(source: ImageSource.gallery, maxWidth: 1200, imageQuality: 80);
+    final imagen = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      imageQuality: 80,
+    );
     if (imagen == null) return;
     final bytes = await imagen.readAsBytes();
     setState(() {
@@ -87,10 +93,14 @@ class _TicketFormState extends State<TicketForm> {
 
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final facade = context.read<ComprasFacade>();
-    final tienda = _tiendaCtrl.text.trim().isEmpty ? null : _tiendaCtrl.text.trim();
-    final concepto = _conceptoCtrl.text.trim().isEmpty ? null : _conceptoCtrl.text.trim();
+    final tienda = _tiendaCtrl.text.trim().isEmpty
+        ? null
+        : _tiendaCtrl.text.trim();
+    final concepto = _conceptoCtrl.text.trim().isEmpty
+        ? null
+        : _conceptoCtrl.text.trim();
     final total = double.parse(_totalCtrl.text.replaceAll(',', '.'));
 
     bool ok;
@@ -112,7 +122,7 @@ class _TicketFormState extends State<TicketForm> {
         imagenTicket: _ticketBytes,
       );
     }
-    
+
     if (ok && mounted) Navigator.of(context).pop();
   }
 
@@ -133,7 +143,12 @@ class _TicketFormState extends State<TicketForm> {
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      padding: EdgeInsets.only(left: 24, right: 24, top: 16, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -142,23 +157,49 @@ class _TicketFormState extends State<TicketForm> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Drag handle
-              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)))),
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
-              Text(widget.compra == null ? 'Nueva compra' : 'Editar compra', style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                widget.compra == null ? 'Nueva compra' : 'Editar compra',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 20),
 
-              CustomTextField(controller: _tiendaCtrl, label: 'Tienda (opcional)', hint: 'Ej: Mercadona', prefixIcon: Icons.store_outlined),
-              const SizedBox(height: 14),
-              CustomTextField(controller: _conceptoCtrl, label: 'Concepto (opcional)', hint: 'Ej: Compra semanal, Fiesta...', prefixIcon: Icons.label_outline),
+              CustomTextField(
+                controller: _tiendaCtrl,
+                label: 'Tienda (opcional)',
+                hint: 'Ej: Mercadona',
+                prefixIcon: Icons.store_outlined,
+              ),
               const SizedBox(height: 14),
               CustomTextField(
-                controller: _totalCtrl, 
-                label: 'Total (€)', 
-                hint: '0.00', 
-                prefixIcon: Icons.euro_outlined, 
-                keyboardType: const TextInputType.numberWithOptions(decimal: true), 
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))],
-                validator: Validators.precio
+                controller: _conceptoCtrl,
+                label: 'Concepto (opcional)',
+                hint: 'Ej: Compra semanal, Fiesta...',
+                prefixIcon: Icons.label_outline,
+              ),
+              const SizedBox(height: 14),
+              CustomTextField(
+                controller: _totalCtrl,
+                label: 'Total (€)',
+                hint: '0.00',
+                prefixIcon: Icons.euro_outlined,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                ],
+                validator: Validators.precio,
               ),
               const SizedBox(height: 14),
 
@@ -166,7 +207,10 @@ class _TicketFormState extends State<TicketForm> {
               GestureDetector(
                 onTap: _seleccionarFecha,
                 child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Fecha', prefixIcon: Icon(Icons.calendar_today_outlined)),
+                  decoration: const InputDecoration(
+                    labelText: 'Fecha',
+                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  ),
                   child: Text('${_fecha.day}/${_fecha.month}/${_fecha.year}'),
                 ),
               ),
@@ -184,7 +228,17 @@ class _TicketFormState extends State<TicketForm> {
               ),
               const SizedBox(height: 20),
 
-              SizedBox(height: 50, child: ElevatedButton(onPressed: _guardar, child: Text(widget.compra == null ? 'Registrar compra' : 'Guardar cambios'))),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _guardar,
+                  child: Text(
+                    widget.compra == null
+                        ? 'Registrar compra'
+                        : 'Guardar cambios',
+                  ),
+                ),
+              ),
             ],
           ),
         ),

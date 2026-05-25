@@ -40,7 +40,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: Consumer<AuthFacade>(
           builder: (_, auth, __) {
             final u = auth.usuario;
-            if (u == null) return const Center(child: CircularProgressIndicator());
+            if (u == null)
+              return const Center(child: CircularProgressIndicator());
 
             return SingleChildScrollView(
               child: Responsive.constrained(
@@ -64,9 +65,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Perfil',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 24),
 
@@ -81,11 +81,18 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         child: Row(
                           children: [
                             Container(
-                              width: 56, height: 56,
+                              width: 56,
+                              height: 56,
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.15),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.15,
+                                ),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                                border: Border.all(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
                               ),
                               alignment: Alignment.center,
                               child: u.avatarUrl != null
@@ -95,11 +102,18 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                         width: 56,
                                         height: 56,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: AppColors.primary),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(
+                                                  Icons.person,
+                                                  color: AppColors.primary,
+                                                ),
                                       ),
                                     )
                                   : Text(
-                                      u.nombreVisible.isNotEmpty ? u.nombreVisible[0].toUpperCase() : 'U',
+                                      u.nombreVisible.isNotEmpty
+                                          ? u.nombreVisible[0].toUpperCase()
+                                          : 'U',
                                       style: const TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
@@ -137,7 +151,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       const SizedBox(height: 16),
 
                       // ── Stats Row ──
-                      Consumer3<EstanciasFacade, ComprasFacade, ProductosFacade>(
+                      Consumer3<
+                        EstanciasFacade,
+                        ComprasFacade,
+                        ProductosFacade
+                      >(
                         builder: (_, estancias, compras, productos, __) {
                           return Row(
                             children: [
@@ -157,7 +175,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _StatBox(
-                                  valor: Formatters.moneda(compras.totalGastadoEsteMes),
+                                  valor: Formatters.moneda(
+                                    compras.totalGastadoEsteMes,
+                                  ),
                                   label: 'Este mes',
                                 ),
                               ),
@@ -225,12 +245,29 @@ class _PerfilScreenState extends State<PerfilScreen> {
                               if (context.mounted) context.go('/login');
                             }
                           },
-                          icon: const Icon(Icons.logout_rounded, size: 20, color: AppColors.error),
-                          label: const Text('Cerrar sesión', style: TextStyle(color: AppColors.error, fontSize: 15, fontWeight: FontWeight.w600)),
+                          icon: const Icon(
+                            Icons.logout_rounded,
+                            size: 20,
+                            color: AppColors.error,
+                          ),
+                          label: const Text(
+                            'Cerrar sesión',
+                            style: TextStyle(
+                              color: AppColors.error,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           style: OutlinedButton.styleFrom(
-                            backgroundColor: AppColors.error.withValues(alpha: 0.05),
-                            side: BorderSide(color: AppColors.error.withValues(alpha: 0.2)),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            backgroundColor: AppColors.error.withValues(
+                              alpha: 0.05,
+                            ),
+                            side: BorderSide(
+                              color: AppColors.error.withValues(alpha: 0.2),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                         ),
                       ),
@@ -308,7 +345,8 @@ class _SettingsTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 40, height: 40,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: AppColors.surfaceVariant,
                 shape: BoxShape.circle,
@@ -321,13 +359,30 @@ class _SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.textHint, size: 24),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textHint,
+              size: 24,
+            ),
           ],
         ),
       ),

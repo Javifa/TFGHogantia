@@ -10,7 +10,7 @@ class AuthService {
   final AuthRepository _repository;
 
   AuthService({AuthRepository? repository})
-      : _repository = repository ?? AuthRepository();
+    : _repository = repository ?? AuthRepository();
 
   /// Inicia sesión validando los campos.
   Future<AuthResponse> iniciarSesion({
@@ -41,7 +41,9 @@ class AuthService {
       throw const AppException('El email es obligatorio');
     }
     if (contrasena.length < 6) {
-      throw const AppException('La contraseña debe tener al menos 6 caracteres');
+      throw const AppException(
+        'La contraseña debe tener al menos 6 caracteres',
+      );
     }
 
     return await _repository.registrar(
@@ -69,13 +71,18 @@ class AuthService {
     if (token.trim().isEmpty || token.length < 5) {
       throw const AppException('El código debe tener al menos 5 dígitos');
     }
-    await _repository.verificarCodigoRecuperacion(email.trim().toLowerCase(), token.trim());
+    await _repository.verificarCodigoRecuperacion(
+      email.trim().toLowerCase(),
+      token.trim(),
+    );
   }
 
   /// Actualiza la contraseña.
   Future<void> actualizarContrasena(String nuevaContrasena) async {
     if (nuevaContrasena.length < 6) {
-      throw const AppException('La contraseña debe tener al menos 6 caracteres');
+      throw const AppException(
+        'La contraseña debe tener al menos 6 caracteres',
+      );
     }
     await _repository.actualizarContrasena(nuevaContrasena);
   }
@@ -99,13 +106,16 @@ class AuthService {
   }
 
   /// Sube una imagen de avatar a Storage.
-  Future<String> subirAvatar(String usuarioId, String nombreArchivo, List<int> bytes) async {
+  Future<String> subirAvatar(
+    String usuarioId,
+    String nombreArchivo,
+    List<int> bytes,
+  ) async {
     return await _repository.subirAvatar(usuarioId, nombreArchivo, bytes);
   }
 
   /// Stream de cambios de auth.
-  Stream<AuthState> get onAuthStateChange =>
-      _repository.onAuthStateChange;
+  Stream<AuthState> get onAuthStateChange => _repository.onAuthStateChange;
 
   /// Usuario de Supabase Auth actual.
   User? get usuarioActual => _repository.usuarioActual;

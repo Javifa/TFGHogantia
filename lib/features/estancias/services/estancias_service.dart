@@ -8,7 +8,7 @@ class EstanciasService {
   final EstanciasRepository _repository;
 
   EstanciasService({EstanciasRepository? repository})
-      : _repository = repository ?? EstanciasRepository();
+    : _repository = repository ?? EstanciasRepository();
 
   /// Obtiene todas las estancias del usuario.
   Future<List<Estancia>> obtenerTodas(String usuarioId) async {
