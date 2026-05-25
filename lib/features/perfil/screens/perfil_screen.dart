@@ -40,7 +40,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: Consumer<AuthFacade>(
           builder: (_, auth, __) {
             final u = auth.usuario;
-            if (u == null) return const Center(child: Text('No autenticado'));
+            if (u == null) return const Center(child: CircularProgressIndicator());
 
             return SingleChildScrollView(
               child: Responsive.constrained(

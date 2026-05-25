@@ -48,10 +48,13 @@ class AuthFacade extends ChangeNotifier {
   /// Escucha cambios de estado de autenticación.
   void _escucharCambiosAuth() {
     _authService.onAuthStateChange.listen((AuthState state) async {
-      if (state.event == AuthChangeEvent.signedIn ||
+      if (state.event == AuthChangeEvent.initialSession ||
+          state.event == AuthChangeEvent.signedIn ||
           state.event == AuthChangeEvent.tokenRefreshed) {
-        await _cargarPerfil();
-      } else if (state.event == AuthChangeEvent.signedOut) {
+        if (_authService.usuarioActual != null) {
+          await _cargarPerfil();
+        }
+      } else if (state.event == AuthChangeEvent.signedOut || state.event == AuthChangeEvent.userDeleted) {
         _usuario = null;
         notifyListeners();
       }
