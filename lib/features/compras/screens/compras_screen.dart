@@ -122,11 +122,6 @@ class _ComprasScreenState extends State<ComprasScreen> {
   }
 
   Future<void> _escanearTicketIA(ImageSource source) async {
-    if (kIsWeb) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('⚠️ La IA de escaneo solo está disponible en la App móvil (Android/iOS).')));
-      return;
-    }
-
     final picker = ImagePicker();
     final file = await picker.pickImage(source: source, maxWidth: 1200, imageQuality: 80);
     
@@ -150,9 +145,9 @@ class _ComprasScreenState extends State<ComprasScreen> {
       ),
     );
 
-    final ocrService = OcrService();
-    final datos = await ocrService.procesarTicket(file.path);
     final bytes = await file.readAsBytes();
+    final ocrService = OcrService();
+    final datos = await ocrService.procesarTicket(file.path, imageBytes: bytes);
     ocrService.dispose();
 
     if (!mounted) return;

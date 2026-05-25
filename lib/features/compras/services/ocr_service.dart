@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'dart:convert';
+
 /// Datos extraídos del ticket por la IA.
 class DatosTicketDetectados {
   final String? tienda;
@@ -11,17 +15,19 @@ class DatosTicketDetectados {
   DatosTicketDetectados({this.tienda, this.total, this.fecha});
 }
 
-/// Servicio encargado de procesar imágenes y extraer texto usando ML Kit.
+/// Servicio encargado de procesar imágenes y extraer texto usando ML Kit o Gemini.
 class OcrService {
   final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
 
-  /// Extrae los datos relevantes de un ticket a partir de la ruta de una imagen.
-  Future<DatosTicketDetectados?> procesarTicket(String imagePath) async {
-    // Si estamos en la web, el ML Kit no funciona nativamente. 
-    // Devolvemos null para manejarlo en la UI o simulamos un fallo.
+  /// Extrae los datos relevantes de un ticket a partir de la ruta de una imagen o sus bytes (necesario en Web).
+  Future<DatosTicketDetectados?> procesarTicket(String imagePath, {Uint8List? imageBytes}) async {
+    // Si estamos en la web, el ML Kit no funciona nativamente. Usaremos Gemini.
     if (kIsWeb) {
-      debugPrint('ML Kit no soportado en entorno Web.');
-      return null;
+      if (imageBytes == null) {
+        debugPrint('Se necesitan los bytes de la imagen para procesar en Web.');
+        return null;
+      }
+      return _procesarConGemini(imageBytes);
     }
 
     try {
@@ -123,6 +129,48 @@ class OcrService {
       final limpio = texto.replaceAll(',', '.');
       return double.parse(limpio);
     } catch (_) {
+      return null;
+    }
+  }
+
+  Future<DatosTicketDetectados?> _procesarConGemini(Uint8List imageBytes) async {
+    try {
+      final apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+      if (apiKey.isEmpty) {
+        debugPrint('Falta la API Key de Gemini en el archivo .env');
+        return null;
+      }
+
+      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      
+      final prompt = TextPart(
+        'Analiza esta imagen de un ticket de compra. '
+        'Extrae únicamente un JSON válido con la siguiente estructura exacta y sin formato markdown: '
+        '{"tienda": "Nombre del supermercado o tienda", "total": 12.34, "fecha": "YYYY-MM-DD"}. '
+        'Si no encuentras algún dato, pon null. El total debe ser numérico. Ejemplo: {"tienda": "MERCADONA", "total": 34.50, "fecha": "2026-05-24"}'
+      );
+      final imagePart = DataPart('image/jpeg', imageBytes);
+
+      final response = await model.generateContent([
+        Content.multi([prompt, imagePart])
+      ]);
+
+      if (response.text == null) return null;
+
+      String jsonString = response.text!.trim();
+      if (jsonString.startsWith('```json')) {
+        jsonString = jsonString.replaceAll('```json', '').replaceAll('```', '').trim();
+      }
+
+      final data = jsonDecode(jsonString);
+
+      return DatosTicketDetectados(
+        tienda: data['tienda']?.toString(),
+        total: data['total'] != null ? double.tryParse(data['total'].toString()) : null,
+        fecha: data['fecha'] != null ? DateTime.tryParse(data['fecha'].toString()) : null,
+      );
+    } catch (e) {
+      debugPrint('Error en Gemini OCR: $e');
       return null;
     }
   }
