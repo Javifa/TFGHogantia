@@ -63,7 +63,7 @@ class _ComprasScreenState extends State<ComprasScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.document_scanner_rounded, color: AppColors.accent),
-              title: const Text('Añadir ticket inteligente ✨'),
+              title: const Text('Añadir ticket inteligente'),
               subtitle: const Text('La IA detectará tienda, total y fecha por ti'),
               onTap: () {
                 Navigator.pop(ctx);

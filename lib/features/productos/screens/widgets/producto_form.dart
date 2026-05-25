@@ -123,26 +123,27 @@ class _ProductoFormState extends State<ProductoForm> {
         notas: notas,
         imagenTicket: _ticketBytes,
       );
-      if (ok && _sincronizarGasto && precio != null && precio > 0 && mounted) {
-        final c = cantidad > 0 ? cantidad : 1;
-        await context.read<ComprasFacade>().crearCompra(
-          tienda: 'Inventario',
-          concepto: nombre,
-          total: precio * c,
-          fecha: _fechaCompra,
-          imagenTicket: _ticketBytes,
-          lineas: [
-            LineaCompra(
-              id: '',
-              compraId: '',
-              nombreItem: nombre,
-              cantidad: c,
-              precioUnitario: precio,
-              subtotal: precio * c,
-            )
-          ]
-        );
-      }
+    }
+
+    if (ok && _sincronizarGasto && precio != null && precio > 0 && mounted) {
+      final c = cantidad > 0 ? cantidad : 1;
+      await context.read<ComprasFacade>().crearCompra(
+        tienda: 'Inventario',
+        concepto: nombre,
+        total: precio * c,
+        fecha: _fechaCompra,
+        imagenTicket: _ticketBytes,
+        lineas: [
+          LineaCompra(
+            id: '',
+            compraId: '',
+            nombreItem: nombre,
+            cantidad: c,
+            precioUnitario: precio,
+            subtotal: precio * c,
+          )
+        ]
+      );
     }
     
     if (ok && mounted) Navigator.of(context).pop();
@@ -209,7 +210,6 @@ class _ProductoFormState extends State<ProductoForm> {
               ]),
               const SizedBox(height: 14),
 
-              if (widget.producto == null) ...[
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Sincronizar como gasto', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
@@ -232,7 +232,6 @@ class _ProductoFormState extends State<ProductoForm> {
                     onTap: _seleccionarFecha,
                   ),
                 const SizedBox(height: 14),
-              ],
 
               CustomTextField(controller: _notasCtrl, label: 'Notas (opcional)', maxLines: 2, prefixIcon: Icons.notes_outlined),
               const SizedBox(height: 14),

@@ -103066,7 +103066,7 @@ return A.b3(s,s,this.$ti.h("hB<1>").a(this.c).x,!1,s,s,!1,s,!0,s,s,s,s,s,s,s,s,s
 qF(a,b,c,d){return this.$ti.h("hB<1>").a(this.c).CW.$4(a,b,c,d)}}
 A.um.prototype={}
 A.yy.prototype={
-E(a){var s=null,r=A.ry(s,B.alH),q=this.c
+E(a){var s=null,r=A.ry(s,B.alG),q=this.c
 q=q==null?s:"GoException: "+q.a
 if(q==null)q="page not found"
 return A.jl(r,A.cR(A.bF(A.b([new A.HQ(q,s),A.jq(B.ale,new A.anK(a),s)],t.p),B.r,B.cd,B.t),s,s),s,s)}}
@@ -106301,7 +106301,7 @@ A.cT(r,!1,s).uu()},
 $S:3}
 A.aCi.prototype={
 $1(a){var s=null,r=this.a
-return A.jk(!0,A.bF(A.b([B.bS,A.bl(s,s,B.m,s,s,new A.bc(B.aZ,s,s,A.b6(2),s,s,B.E),s,4,s,s,s,s,s,40),B.aj,A.nA(!1,s,s,s,!0,s,s,s,!0,s,B.VI,s,s,s,s,new A.aCg(r,a),!1,s,s,s,s,s,s,B.akP,s,s),A.nA(!1,s,s,s,!0,s,s,s,!0,s,B.Vq,s,s,s,s,new A.aCh(r,a),!1,s,s,s,s,B.alB,s,B.alF,s,s),B.aj],t.p),B.r,B.p,B.a9),!0,!1,B.a6,!0,!0)},
+return A.jk(!0,A.bF(A.b([B.bS,A.bl(s,s,B.m,s,s,new A.bc(B.aZ,s,s,A.b6(2),s,s,B.E),s,4,s,s,s,s,s,40),B.aj,A.nA(!1,s,s,s,!0,s,s,s,!0,s,B.VI,s,s,s,s,new A.aCg(r,a),!1,s,s,s,s,s,s,B.akP,s,s),A.nA(!1,s,s,s,!0,s,s,s,!0,s,B.Vq,s,s,s,s,new A.aCh(r,a),!1,s,s,s,s,B.alB,s,B.alH,s,s),B.aj],t.p),B.r,B.p,B.a9),!0,!1,B.a6,!0,!0)},
 $S:251}
 A.aCg.prototype={
 $0(){A.dd(this.b,!1).fL(null)
@@ -108774,12 +108774,11 @@ s=h!=null?3:5
 break
 case 3:s=6
 return A.m(n.yb(h.aCe(l,k,g,m,j,i,f),p.Q),$async$u1)
-case 6:e=b
-s=4
+case 6:s=4
 break
 case 5:s=7
 return A.m(n.F2(l,k,g,o.c,p.Q,m,j,i,f),$async$u1)
-case 7:e=b
+case 7:case 4:e=b
 s=e&&p.ax&&i!=null&&i>0&&p.c!=null?8:9
 break
 case 8:d=l>0?l:1
@@ -108788,7 +108787,7 @@ o.toString
 h=i*d
 s=10
 return A.m(A.cT(o,!1,t.EP).uH(m,p.at,p.Q,A.b([new A.dx("","",null,m,d,i,h)],t.wJ),"Inventario",h),$async$u1)
-case 10:case 9:case 4:if(e&&p.c!=null){o=p.c
+case 10:case 9:if(e&&p.c!=null){o=p.c
 o.toString
 A.dd(o,!1).eb()}case 1:return A.p(q,r)}})
 return A.q($async$u1,r)},
@@ -108807,12 +108806,11 @@ l=t.p
 r=A.c9(A.b([A.dh(A.fx(j.f,i,A.b([r],m),B.j_,"Cantidad",1,!1,i,i,i,i,new A.aJK()),1),B.e4,A.dh(A.fx(j.r,i,A.b([r],m),B.j_,"M\xednimo",1,!1,i,i,i,i,new A.aJL()),1)],l),B.r,B.p,B.t,0)
 k=j.z
 q=A.Y(new A.a_(B.Z2,new A.aJM(),q),p)
-g=A.b([g,B.aj,f,B.dw,s,B.cJ,o,B.cJ,r,B.cJ,A.c9(A.b([A.dh(A.aXb(B.Wa,k,q,new A.aJN(j),n),2),A.dh(A.fx(j.w,"0.00",A.b([new A.tk(A.bU("^\\d+\\.?\\d*",!0,!1),!0,"")],m),B.Me,"Precio (\u20ac)",1,!1,i,i,i,i,i),1)],l),B.r,B.p,B.t,0),B.cJ],l)
-if(j.a.d==null){f=A.b([new A.Yo(j.ax,new A.aJO(j),B.h,B.aln,B.akY,B.a6,i)],l)
-if(j.ax){s=A.bl(i,B.VD,B.m,i,i,new A.bc(B.h.bD(0.1),i,i,i,i,i,B.dg),i,i,i,i,B.i4,i,i,i)
-r=j.at
-f.push(A.nA(!1,B.a6,i,i,!0,i,i,i,!0,i,s,i,i,i,i,j.gavK(),!1,i,i,i,i,A.ak(B.c.dL(B.e.j(A.d5(r)),2,"0")+"/"+B.c.dL(B.e.j(A.b7(r)),2,"0")+"/"+A.b0(r),i,i,i,B.j1,i,i,i),i,B.akH,B.akW,i))}f.push(B.cJ)
-B.b.M(g,f)}g.push(A.fx(j.x,i,i,B.c9,"Notas (opcional)",2,!1,i,B.on,i,i,i))
+g=A.b([g,B.aj,f,B.dw,s,B.cJ,o,B.cJ,r,B.cJ,A.c9(A.b([A.dh(A.aXb(B.Wa,k,q,new A.aJN(j),n),2),A.dh(A.fx(j.w,"0.00",A.b([new A.tk(A.bU("^\\d+\\.?\\d*",!0,!1),!0,"")],m),B.Me,"Precio (\u20ac)",1,!1,i,i,i,i,i),1)],l),B.r,B.p,B.t,0),B.cJ,new A.Yo(j.ax,new A.aJO(j),B.h,B.aln,B.akY,B.a6,i)],l)
+if(j.ax){f=A.bl(i,B.VD,B.m,i,i,new A.bc(B.h.bD(0.1),i,i,i,i,i,B.dg),i,i,i,i,B.i4,i,i,i)
+s=j.at
+g.push(A.nA(!1,B.a6,i,i,!0,i,i,i,!0,i,f,i,i,i,i,j.gavK(),!1,i,i,i,i,A.ak(B.c.dL(B.e.j(A.d5(s)),2,"0")+"/"+B.c.dL(B.e.j(A.b7(s)),2,"0")+"/"+A.b0(s),i,i,i,B.j1,i,i,i),i,B.akH,B.akW,i))}g.push(B.cJ)
+g.push(A.fx(j.x,i,i,B.c9,"Notas (opcional)",2,!1,i,B.on,i,i,i))
 g.push(B.cJ)
 g.push(new A.O_(j.Q,j.as,j.gavL(),new A.aJP(j),i))
 g.push(B.dw)
@@ -117416,8 +117414,8 @@ B.al7=new A.b1("Compra no encontrada",null,null,null,null,null,null,null,null,nu
 B.Qs=new A.jA(B.S,null,null,B.al7,null)
 B.ax=new A.N(1,0.4,0.4,0.4,B.f)
 B.hs=new A.u(!0,B.ax,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.alG=new A.b1("Sin datos hist\xf3ricos",null,B.hs,null,null,null,null,null,null,null)
-B.Qt=new A.jA(B.S,null,null,B.alG,null)
+B.alF=new A.b1("Sin datos hist\xf3ricos",null,B.hs,null,null,null,null,null,null,null)
+B.Qt=new A.jA(B.S,null,null,B.alF,null)
 B.Qu=new A.oW(1,"error")
 B.rW=new A.oW(5,"heartbeat")
 B.rX=new A.oW(6,"accessToken")
@@ -121516,9 +121514,9 @@ B.alB=new A.b1("La IA detectar\xe1 tienda, total y fecha por ti",null,null,null,
 B.ak6=new A.u(!0,B.ax,null,null,null,null,16,B.a7,null,-0.5,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.alC=new A.b1("Balance Mensual",null,B.ak6,null,null,null,null,null,null,null)
 B.alD=new A.b1("Privacidad y Seguridad",null,null,null,null,null,null,null,null,null)
-B.alF=new A.b1("A\xf1adir ticket inteligente \u2728",null,null,null,null,null,null,null,null,null)
-B.alH=new A.b1("Page Not Found",null,null,null,null,null,null,null,null,null)
+B.alG=new A.b1("Page Not Found",null,null,null,null,null,null,null,null,null)
 B.qk=new A.b1("Cancelar",null,null,null,null,null,null,null,null,null)
+B.alH=new A.b1("A\xf1adir ticket inteligente",null,null,null,null,null,null,null,null,null)
 B.alK=new A.b1("Crear cuenta",null,null,null,null,null,null,null,null,null)
 B.alL=new A.b1("Detalle de compra",null,null,null,null,null,null,null,null,null)
 B.apK=new A.ayN(0,"system")
