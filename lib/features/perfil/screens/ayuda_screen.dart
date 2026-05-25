@@ -56,7 +56,7 @@ class AyudaScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
                         const SnackBar(content: Text('Contactando con soporte... (Simulación)')),
                       );
                     },

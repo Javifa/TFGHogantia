@@ -32,7 +32,7 @@ class _CompraDetailScreenState extends State<CompraDetailScreen> {
     if (imagen == null) return;
     // En modo demo simplemente mostramos feedback
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(content: Text('Ticket adjuntado correctamente'), behavior: SnackBarBehavior.floating),
       );
     }
@@ -56,9 +56,9 @@ class _CompraDetailScreenState extends State<CompraDetailScreen> {
               final ok = await facade.eliminarCompra(id);
               if (ok && mounted) {
                 Navigator.of(context).pop(); // Volver a lista
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Compra eliminada')));
+                ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Compra eliminada')));
               } else if (!ok && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al eliminar')));
+                ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al eliminar')));
               }
             },
             child: const Text('Eliminar'),

@@ -40,11 +40,11 @@ class _ProductoDetailScreenState extends State<ProductoDetailScreen> {
       if (p != null) {
         final ok = await facade.actualizarProducto(p, nuevaImagenTicket: bytes);
         if (ok && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
             const SnackBar(content: Text('Ticket adjuntado correctamente'), behavior: SnackBarBehavior.floating),
           );
         } else if (!ok && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
             SnackBar(content: Text(facade.error ?? 'Error al adjuntar ticket. Revisa Supabase.'), backgroundColor: AppColors.error),
           );
         }

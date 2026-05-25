@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _recuperarContrasena() async {
     if (_emailCtrl.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
         const SnackBar(content: Text('Por favor, introduce tu email en el campo superior primero')),
       );
       return;
@@ -350,14 +350,14 @@ class _OtpDialogState extends State<_OtpDialog> {
       if (ok) {
         setState(() => _codeVerified = true);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(facade.error ?? 'Código inválido')));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(facade.error ?? 'Código inválido')));
       }
     }
   }
 
   Future<void> _cambiarPassword() async {
     if (_passCtrl.text.trim().length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mínimo 6 caracteres')));
+      ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Mínimo 6 caracteres')));
       return;
     }
     setState(() => _loading = true);
@@ -367,9 +367,9 @@ class _OtpDialogState extends State<_OtpDialog> {
       setState(() => _loading = false);
       if (ok) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Contraseña cambiada con éxito')));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('Contraseña cambiada con éxito')));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al actualizar')));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al actualizar')));
       }
     }
   }

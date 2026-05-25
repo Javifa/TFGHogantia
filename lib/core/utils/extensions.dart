@@ -24,7 +24,7 @@ extension ContextExtensions on BuildContext {
 
   /// Muestra un SnackBar con mensaje.
   void mostrarSnackBar(String mensaje, {bool esError = false}) {
-    ScaffoldMessenger.of(this).hideCurrentSnackBar();
+    ScaffoldMessenger.of(this).clearSnackBars();
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(mensaje),

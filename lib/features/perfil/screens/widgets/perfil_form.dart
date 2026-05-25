@@ -65,7 +65,7 @@ class _PerfilFormState extends State<PerfilForm> {
       if (ok) {
         Navigator.of(context).pop();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
           SnackBar(content: Text(facade.error ?? 'Error al guardar el perfil')),
         );
       }
@@ -88,7 +88,7 @@ class _PerfilFormState extends State<PerfilForm> {
         if (success) {
           context.go('/login');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(
             SnackBar(content: Text(facade.error ?? 'Error al borrar la cuenta')),
           );
         }

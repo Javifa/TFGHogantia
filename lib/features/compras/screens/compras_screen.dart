@@ -155,7 +155,7 @@ class _ComprasScreenState extends State<ComprasScreen> {
       Navigator.of(context, rootNavigator: true).pop(); // Cerrar loading
 
       if (datos == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se han detectado datos claros en el ticket.')));
+        ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(const SnackBar(content: Text('No se han detectado datos claros en el ticket.')));
       } else {
         _abrirFormulario(tienda: datos.tienda, total: datos.total, fecha: datos.fecha, bytes: bytes);
       }
