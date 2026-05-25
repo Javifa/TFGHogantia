@@ -106624,7 +106624,7 @@ if(f==null)f=""
 if(f.length===0)throw A.f(A.dl("Falta la API Key de Gemini en el archivo .env"))
 p=new A.ajv(f,null)
 o=A.bfr("https","generativelanguage.googleapis.com","v1beta",null)
-n=A.b9a("gemini-1.5-flash")
+n=A.b9a("gemini-2.5-flash")
 if(b.length>3){m=b[0]
 if(m===137&&b[1]===80&&b[2]===78&&b[3]===71)l="image/png"
 else l=m===82&&b[1]===73&&b[2]===70&&b[3]===70?"image/webp":"image/jpeg"}else l="image/jpeg"

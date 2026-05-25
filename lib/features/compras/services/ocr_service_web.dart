@@ -18,7 +18,7 @@ class OcrServiceImpl implements OcrService {
         throw Exception('Falta la API Key de Gemini en el archivo .env');
       }
 
-      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      final model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
       
       final prompt = TextPart(
         'Analiza esta imagen de un ticket de compra. '
