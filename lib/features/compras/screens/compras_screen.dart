@@ -164,11 +164,11 @@ class _ComprasScreenState extends State<ComprasScreen> {
       Navigator.pop(context); // Intentar cerrar loading si sigue ahí
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
+        builder: (ctx) => AlertDialog(
           title: const Text('Error Web'),
           content: SingleChildScrollView(child: Text('Error: $e\n\nStack: $stack')),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(_), child: const Text('OK'))
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))
           ]
         )
       );
