@@ -152,7 +152,7 @@ class _ComprasScreenState extends State<ComprasScreen> {
       ocrService.dispose();
 
       if (!mounted) return;
-      Navigator.pop(context); // Cerrar loading
+      Navigator.of(context, rootNavigator: true).pop(); // Cerrar loading
 
       if (datos == null) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se han detectado datos claros en el ticket.')));
@@ -161,7 +161,7 @@ class _ComprasScreenState extends State<ComprasScreen> {
       }
     } catch (e, stack) {
       if (!mounted) return;
-      Navigator.pop(context); // Intentar cerrar loading si sigue ahí
+      Navigator.of(context, rootNavigator: true).pop(); // Intentar cerrar loading si sigue ahí
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
