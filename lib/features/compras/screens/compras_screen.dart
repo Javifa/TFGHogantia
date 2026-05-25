@@ -122,46 +122,55 @@ class _ComprasScreenState extends State<ComprasScreen> {
   }
 
   Future<void> _escanearTicketIA(ImageSource source) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: source, maxWidth: 1200, imageQuality: 80);
-    
-    if (file == null) return;
+    try {
+      final picker = ImagePicker();
+      final file = await picker.pickImage(source: source, maxWidth: 1200, imageQuality: 80);
+      
+      if (file == null) return;
 
-    if (!mounted) return;
-    
-    // Mostrar loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Procesando ticket con IA...'),
-          ],
+      if (!mounted) return;
+      
+      // Mostrar loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Procesando ticket con IA...'),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 
-    final bytes = await file.readAsBytes();
-    final ocrService = OcrService();
-    final datos = await ocrService.procesarTicket(file.path, imageBytes: bytes);
-    ocrService.dispose();
+      final bytes = await file.readAsBytes();
+      final ocrService = OcrService();
+      final datos = await ocrService.procesarTicket(file.path, imageBytes: bytes);
+      ocrService.dispose();
 
-    if (!mounted) return;
-    Navigator.pop(context); // Cerrar loading
+      if (!mounted) return;
+      Navigator.pop(context); // Cerrar loading
 
-    if (datos == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se pudo procesar el ticket. Rellénalo manualmente.')));
-      _abrirFormulario(bytes: bytes);
-    } else {
-      _abrirFormulario(
-        tienda: datos.tienda,
-        total: datos.total,
-        fecha: datos.fecha,
-        bytes: bytes,
+      if (datos == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No se han detectado datos claros en el ticket.')));
+      } else {
+        _abrirFormulario(tienda: datos.tienda, total: datos.total, fecha: datos.fecha, bytes: bytes);
+      }
+    } catch (e, stack) {
+      if (!mounted) return;
+      Navigator.pop(context); // Intentar cerrar loading si sigue ahí
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Error Web'),
+          content: SingleChildScrollView(child: Text('Error: $e\n\nStack: $stack')),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(_), child: const Text('OK'))
+          ]
+        )
       );
     }
   }
