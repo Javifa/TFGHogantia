@@ -38,6 +38,36 @@ class _CompraDetailScreenState extends State<CompraDetailScreen> {
     }
   }
 
+  void _confirmarEliminar(BuildContext context, ComprasFacade facade, String id) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar compra'),
+        content: const Text('¿Estás seguro de que deseas eliminar esta compra? Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: Colors.white),
+            onPressed: () async {
+              Navigator.pop(ctx); // Cerrar dialog
+              final ok = await facade.eliminarCompra(id);
+              if (ok && mounted) {
+                Navigator.of(context).pop(); // Volver a lista
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Compra eliminada')));
+              } else if (!ok && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(facade.error ?? 'Error al eliminar')));
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hp = Responsive.horizontalPadding(context);
@@ -50,16 +80,25 @@ class _CompraDetailScreenState extends State<CompraDetailScreen> {
             builder: (_, facade, __) {
               final c = facade.compraActual;
               if (c == null) return const SizedBox();
-              return IconButton(
-                icon: const Icon(Icons.edit_rounded),
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (_) => TicketForm(compra: c),
-                  );
-                },
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit_rounded),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => TicketForm(compra: c),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+                    onPressed: () => _confirmarEliminar(context, facade, c.id),
+                  ),
+                ],
               );
             },
           ),
