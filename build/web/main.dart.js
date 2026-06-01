@@ -33914,12 +33914,16 @@ return A.l(A.du(null,t.H),$async$Pn)
 case 7:q=9
 o="https://pgofwnszpkaezvabsxnk.supabase.co"
 if(J.bM(o)!==0)h=o
-else{j=$.aa7().gP6().i(0,"SUPABASE_URL")
-h=j==null?"":j}n=h
+else{j=$.aa7()
+if(j.a){j=j.gP6().i(0,"SUPABASE_URL")
+if(j==null)j=""
+h=j}else h=""}n=h
 m="sb_publishable_4U6-kMhY--bqUfSQfXdyGw_9orSUqEs"
 if(J.bM(m)!==0)g=m
-else{j=$.aa7().gP6().i(0,"SUPABASE_ANON_KEY")
-g=j==null?"":j}l=g
+else{j=$.aa7()
+if(j.a){j=j.gP6().i(0,"SUPABASE_ANON_KEY")
+if(j==null)j=""
+g=j}else g=""}l=g
 s=J.bM(n)!==0&&J.bM(l)!==0?12:13
 break
 case 12:s=14
@@ -106790,35 +106794,37 @@ A.apo.prototype={
 Hr(a,b){return this.aK5(a,b)},
 aK5(a,b){var s=0,r=A.r(t.Kd),q,p,o,n,m,l,k,j,i,h,g,f
 var $async$Hr=A.n(function(c,d){if(c===1)return A.o(d,r)
-for(;;)switch(s){case 0:g=$.aa7().gP6().i(0,"GEMINI_API_KEY")
-f=g==null?"":g
-if(f.length===0)throw A.f(A.dl("Falta la API Key de Gemini en el archivo .env"))
-g=new A.ajx(f,null)
+for(;;)switch(s){case 0:g=""
+f=$.aa7()
+if(f.a){f=f.gP6().i(0,"GEMINI_API_KEY")
+if(f==null)f=""
+g=f}if(g.length===0)throw A.f(A.dl("Falta la API Key de Gemini en el archivo .env"))
+f=new A.ajx(g,null)
 p=A.bfx("https","generativelanguage.googleapis.com","v1beta",null)
 o=A.b9g("gemini-2.5-flash")
 if(b.length>3){n=b[0]
 if(n===137&&b[1]===80&&b[2]===78&&b[3]===71)m="image/png"
 else m=n===82&&b[1]===73&&b[2]===70&&b[3]===70?"image/webp":"image/jpeg"}else m="image/jpeg"
 n=A.Y(A.b([new A.l0('Analiza esta imagen de un ticket de compra. Extrae \xfanicamente un JSON v\xe1lido con la siguiente estructura exacta y sin formato markdown: {"tienda": "Nombre del supermercado o tienda", "total": 12.34, "fecha": "YYYY-MM-DD"}. Si no encuentras alg\xfan dato, pon null. El total debe ser num\xe9rico. Ejemplo: {"tienda": "MERCADONA", "total": 34.50, "fecha": "2026-05-24"}'),new A.RL(m,b)],t.Uz),t.z2)
-n=new A.ahM(o,B.a2N,null,null,g,p,null,null).ali(A.b([new A.p1("user",n)],t.kQ),null,null,null,null)
+n=new A.ahM(o,B.a2N,null,null,f,p,null,null).ali(A.b([new A.p1("user",n)],t.kQ),null,null,null,null)
 l=p.gvz()
 s=3
-return A.l(g.zU(p.aL2(A.aXG(l,A.b([o.b,o.a+":generateContent"],t.s),A.a0(l).c)),n).bn(A.bi_(),t.Nf),$async$Hr)
+return A.l(f.zU(p.aL2(A.aXG(l,A.b([o.b,o.a+":generateContent"],t.s),A.a0(l).c)),n).bn(A.bi_(),t.Nf),$async$Hr)
 case 3:k=d
 if(k.gc5()==null||k.gc5().length===0)throw A.f(A.dl("Gemini devolvi\xf3 una respuesta vac\xeda"))
-g=k.gc5()
-g.toString
-j=B.c.ca(g)
+f=k.gc5()
+f.toString
+j=B.c.ca(f)
 i=A.bV("\\{[\\s\\S]*\\}",!0,!1).lr(j)
 if(i==null)throw A.f(A.dl("No se encontr\xf3 JSON en la respuesta de Gemini: "+j))
-g=i.b[0]
-g.toString
-h=B.as.uN(g,null)
-g=J.aN(h)
-p=g.i(h,"tienda")
+f=i.b[0]
+f.toString
+h=B.as.uN(f,null)
+f=J.aN(h)
+p=f.i(h,"tienda")
 p=p==null?null:J.bF(p)
-o=g.i(h,"total")!=null?A.GH(J.bF(g.i(h,"total"))):null
-q=new A.RP(p,o,g.i(h,"fecha")!=null?A.aWV(J.bF(g.i(h,"fecha"))):null)
+o=f.i(h,"total")!=null?A.GH(J.bF(f.i(h,"total"))):null
+q=new A.RP(p,o,f.i(h,"fecha")!=null?A.aWV(J.bF(f.i(h,"fecha"))):null)
 s=1
 break
 case 1:return A.p(q,r)}})

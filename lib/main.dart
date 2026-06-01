@@ -24,10 +24,14 @@ void main() async {
   // Inicializar Supabase (si las credenciales son válidas)
   try {
     final urlEnv = const String.fromEnvironment('SUPABASE_URL');
-    final url = urlEnv.isNotEmpty ? urlEnv : (dotenv.env['SUPABASE_URL'] ?? '');
+    final url = urlEnv.isNotEmpty 
+        ? urlEnv 
+        : (dotenv.isInitialized ? dotenv.env['SUPABASE_URL'] ?? '' : '');
     
     final anonKeyEnv = const String.fromEnvironment('SUPABASE_ANON_KEY');
-    final anonKey = anonKeyEnv.isNotEmpty ? anonKeyEnv : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
+    final anonKey = anonKeyEnv.isNotEmpty 
+        ? anonKeyEnv 
+        : (dotenv.isInitialized ? dotenv.env['SUPABASE_ANON_KEY'] ?? '' : '');
 
     if (url.isNotEmpty && anonKey.isNotEmpty) {
       await SupabaseConfig.inicializar(url: url, anonKey: anonKey);
