@@ -205,21 +205,21 @@ class _ComprasScreenState extends State<ComprasScreen> {
         context,
         rootNavigator: true,
       ).pop(); // Intentar cerrar loading si sigue ahí
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Error Web'),
-          content: SingleChildScrollView(
-            child: Text('Error: $e\n\nStack: $stack'),
+      
+      String errorMsg = 'No se ha podido conectar con el servicio de IA.';
+      if (e.toString().toLowerCase().contains('suspended') || 
+          e.toString().toLowerCase().contains('permission denied')) {
+        errorMsg = 'El servicio de reconocimiento de IA está saturado o no disponible. Inténtalo más tarde.';
+      }
+      
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: AppColors.error,
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+        );
     }
   }
 
