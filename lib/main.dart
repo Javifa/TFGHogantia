@@ -12,15 +12,22 @@ void main() async {
   usePathUrlStrategy();
 
   // Cargar variables de entorno
-  await dotenv.load(fileName: '.env');
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    debugPrint('No se encontró archivo .env, usando variables compiladas.');
+  }
 
   // Inicializar formatos de fecha en español
   await initializeDateFormatting('es_ES', null);
 
   // Inicializar Supabase (si las credenciales son válidas)
   try {
-    final url = dotenv.env['SUPABASE_URL'] ?? '';
-    final anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+    final urlEnv = const String.fromEnvironment('SUPABASE_URL');
+    final url = urlEnv.isNotEmpty ? urlEnv : (dotenv.env['SUPABASE_URL'] ?? '');
+    
+    final anonKeyEnv = const String.fromEnvironment('SUPABASE_ANON_KEY');
+    final anonKey = anonKeyEnv.isNotEmpty ? anonKeyEnv : (dotenv.env['SUPABASE_ANON_KEY'] ?? '');
 
     if (url.isNotEmpty && anonKey.isNotEmpty) {
       await SupabaseConfig.inicializar(url: url, anonKey: anonKey);

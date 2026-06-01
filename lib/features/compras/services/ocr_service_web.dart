@@ -16,7 +16,9 @@ class OcrServiceImpl implements OcrService {
       return null;
     }
 
-    final apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+    final apiKeyEnv = const String.fromEnvironment('GEMINI_API_KEY');
+    final apiKey = apiKeyEnv.isNotEmpty ? apiKeyEnv : (dotenv.env['GEMINI_API_KEY'] ?? '');
+    
     if (apiKey.isEmpty) {
       throw Exception('Falta la API Key de Gemini en el archivo .env');
     }
